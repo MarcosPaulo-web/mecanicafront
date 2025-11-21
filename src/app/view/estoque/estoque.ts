@@ -1,25 +1,36 @@
-import { Component } from '@angular/core';
+// src/app/view/estoque/estoque.ts
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Titulo } from '../../componentes/titulo/titulo';
 import { Card } from '../../componentes/card/card';
 import { PesquisaFiltro } from '../../componentes/pesquisa-filtro/pesquisa-filtro';
 import { OptionDropdown } from '../../shared/models/option-dropdown';
 import { Tabela } from '../../componentes/tabela/tabela';
-import { CommonModule } from '@angular/common';
+import { ModalProduto } from '../../componentes/modal-produto/modal-produto';
+import { Loading } from '../../componentes/loading/loading';
+import { ProdutoService } from '../../shared/services/produto.service';
+import { Produto, ProdutoRequest } from '../../shared/models/produto.model';
 
 @Component({
   selector: 'app-estoque',
-  imports: [Titulo, Card, PesquisaFiltro, Tabela, CommonModule],
+  standalone: true,
+  imports: [CommonModule, Titulo, Card, PesquisaFiltro, Tabela, ModalProduto, Loading],
   templateUrl: './estoque.html',
   styleUrl: './estoque.scss',
 })
-export class Estoque {
+export class Estoque implements OnInit {
+  @ViewChild(ModalProduto) modalProduto!: ModalProduto;
+
+  protected produtos: Produto[] = [];
+  protected produtosFiltrados: Produto[] = [];
+  protected produtoSelecionado?: Produto;
+  protected loading: boolean = false;
+
   protected listaCategorias: OptionDropdown[] = [
     new OptionDropdown('Todas as categorias'),
-    new OptionDropdown('Peças'),
   ];
 
   protected listaCabecario: string[] = [
-    'Código',
     'Produto',
     'Categoria',
     'Quantidade',
@@ -30,116 +41,123 @@ export class Estoque {
     'Ações',
   ];
 
-  protected listaBody = [
-    {
-      codigo: 'P001',
-      descricao: 'Velas de ignição (jogo)\nFornecedor A',
-      categoria: 'Peças',
-      quantidade: '50',
-      estoqueMinimo: '10',
-      precoUnitario: 'R$ 120.00',
-      precoTotal: 'R$ 6000.00',
-      status: 'normal',
-    },
-    {
-      codigo: 'P002',
-      descricao: 'Filtro de óleo\nFornecedor B',
-      categoria: 'Peças',
-      quantidade: '120',
-      estoqueMinimo: '20',
-      precoUnitario: 'R$ 35.00',
-      precoTotal: 'R$ 4200.00',
-      status: 'normal',
-    },
-    {
-      codigo: 'P003',
-      descricao: 'Pastilhas de freio (par)\nFornecedor C',
-      categoria: 'Peças',
-      quantidade: '15',
-      estoqueMinimo: '10',
-      precoUnitario: 'R$ 190.00',
-      precoTotal: 'R$ 2850.00',
-      status: 'baixo',
-    },
-    {
-      codigo: 'P004',
-      descricao: 'Óleo sintético 5W30 (1L)\nFornecedor D',
-      categoria: 'Lubrificantes',
-      quantidade: '8',
-      estoqueMinimo: '12',
-      precoUnitario: 'R$ 45.00',
-      precoTotal: 'R$ 360.00',
-      status: 'crítico',
-    },
-    {
-      codigo: 'P005',
-      descricao: 'Correia dentada\nFornecedor E',
-      categoria: 'Peças',
-      quantidade: '25',
-      estoqueMinimo: '5',
-      precoUnitario: 'R$ 85.00',
-      precoTotal: 'R$ 2125.00',
-      status: 'normal',
-    },
-    {
-      codigo: 'P006',
-      descricao: 'Amortecedor traseiro\nFornecedor F',
-      categoria: 'Suspensão',
-      quantidade: '6',
-      estoqueMinimo: '8',
-      precoUnitario: 'R$ 310.00',
-      precoTotal: 'R$ 1860.00',
-      status: 'baixo',
-    },
-    {
-      codigo: 'P007',
-      descricao: 'Bateria 60Ah\nFornecedor A',
-      categoria: 'Elétrica',
-      quantidade: '3',
-      estoqueMinimo: '5',
-      precoUnitario: 'R$ 480.00',
-      precoTotal: 'R$ 1440.00',
-      status: 'crítico',
-    },
-    {
-      codigo: 'P008',
-      descricao: 'Pneu 205/55 R16\nFornecedor G',
-      categoria: 'Pneus',
-      quantidade: '40',
-      estoqueMinimo: '20',
-      precoUnitario: 'R$ 350.00',
-      precoTotal: 'R$ 14000.00',
-      status: 'normal',
-    },
-    {
-      codigo: 'P009',
-      descricao: 'Kit embreagem completo\nFornecedor H',
-      categoria: 'Transmissão',
-      quantidade: '12',
-      estoqueMinimo: '8',
-      precoUnitario: 'R$ 750.00',
-      precoTotal: 'R$ 9000.00',
-      status: 'normal',
-    },
-    {
-      codigo: 'P010',
-      descricao: 'Sensor de oxigênio (sonda lambda)\nFornecedor I',
-      categoria: 'Eletrônica',
-      quantidade: '7',
-      estoqueMinimo: '10',
-      precoUnitario: 'R$ 220.00',
-      precoTotal: 'R$ 1540.00',
-      status: 'baixo',
-    },
-  ];
+  // Contadores
+  protected totalProdutos: number = 0;
+  protected totalItens: number = 0;
+  protected valorEstoque: number = 0;
+  protected estoqueBaixo: number = 0;
 
-  protected valorPesquisa: string = '';
-  protected filtro: string = '';
+  constructor(private produtoService: ProdutoService) {}
 
-  getPesquisa(valor: string) {
-    this.valorPesquisa = valor;
+  ngOnInit(): void {
+    this.carregarProdutos();
   }
-  getFiltro(valor: string) {
-    this.filtro = valor;
+
+  carregarProdutos(): void {
+    this.loading = true;
+    this.produtoService.listarAtivos().subscribe({
+      next: (produtos) => {
+        this.produtos = produtos;
+        this.produtosFiltrados = produtos;
+        this.calcularContadores();
+        this.extrairCategorias();
+        this.loading = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar produtos:', erro);
+        alert('Erro ao carregar produtos. Tente novamente.');
+        this.loading = false;
+      },
+    });
+  }
+
+  calcularContadores(): void {
+    this.totalProdutos = this.produtos.length;
+    this.totalItens = this.produtos.reduce((sum, p) => sum + p.qtdEstoque, 0);
+    this.valorEstoque = this.produtos.reduce((sum, p) => sum + (p.vlCusto * p.qtdEstoque), 0);
+    this.estoqueBaixo = this.produtos.filter((p) => p.qtdEstoque < p.qtdMinimo).length;
+  }
+
+  extrairCategorias(): void {
+    const categorias = [...new Set(this.produtos.map((p) => p.categoria).filter((c) => c))];
+    this.listaCategorias = [
+      new OptionDropdown('Todas as categorias'),
+      ...categorias.map((c) => new OptionDropdown(c!)),
+    ];
+  }
+
+  filtrarPorTexto(termo: string): void {
+    if (!termo) {
+      this.produtosFiltrados = this.produtos;
+      return;
+    }
+
+    termo = termo.toLowerCase();
+    this.produtosFiltrados = this.produtos.filter((produto) =>
+      produto.nmProduto.toLowerCase().includes(termo)
+    );
+  }
+
+  filtrarPorCategoria(categoria: string): void {
+    if (categoria === 'Todas as categorias') {
+      this.produtosFiltrados = this.produtos;
+      return;
+    }
+
+    this.produtosFiltrados = this.produtos.filter((p) => p.categoria === categoria);
+  }
+
+  abrirModalNovo(): void {
+    this.produtoSelecionado = undefined;
+    setTimeout(() => this.modalProduto.abrir(), 100);
+  }
+
+  abrirModalEditar(produto: Produto): void {
+    this.produtoSelecionado = produto;
+    setTimeout(() => this.modalProduto.abrir(), 100);
+  }
+
+  salvarProduto(produtoData: ProdutoRequest): void {
+    this.loading = true;
+
+    if (this.produtoSelecionado) {
+      // Editar
+      this.produtoService.atualizar(this.produtoSelecionado.cdProduto, produtoData).subscribe({
+        next: () => {
+          alert('Produto atualizado com sucesso!');
+          this.modalProduto.fecharModal();
+          this.carregarProdutos();
+        },
+        error: (erro) => {
+          console.error('Erro ao atualizar produto:', erro);
+          alert('Erro ao atualizar produto. Verifique os dados e tente novamente.');
+          this.loading = false;
+        },
+      });
+    } else {
+      // Criar novo
+      this.produtoService.criar(produtoData).subscribe({
+        next: () => {
+          alert('Produto cadastrado com sucesso!');
+          this.modalProduto.fecharModal();
+          this.carregarProdutos();
+        },
+        error: (erro) => {
+          console.error('Erro ao cadastrar produto:', erro);
+          alert('Erro ao cadastrar produto. Verifique os dados e tente novamente.');
+          this.loading = false;
+        },
+      });
+    }
+  }
+
+  getStatusEstoque(produto: Produto): { texto: string; classe: string } {
+    if (produto.qtdEstoque === 0) {
+      return { texto: 'Zerado', classe: 'bg-danger' };
+    }
+    if (produto.qtdEstoque < produto.qtdMinimo) {
+      return { texto: 'Baixo', classe: 'bg-warning' };
+    }
+    return { texto: 'Normal', classe: 'bg-success' };
   }
 }
