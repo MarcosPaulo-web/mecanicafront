@@ -1,5 +1,5 @@
 // src/app/componentes/modal-cliente/modal-cliente.ts
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Cliente, ClienteRequest } from '../../shared/models/cliente.model';
@@ -26,9 +26,20 @@ export class ModalCliente implements OnInit {
 
   ngOnInit(): void {
     this.criarForm();
-    
+
     if (this.cliente) {
       this.preencherForm();
+    }
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['cliente'] && changes['cliente'].currentValue) {
+      this.preencherForm();
+    }
+
+    // Se cliente vier undefined (ex: modo criar), limpar o formulário
+    if (changes['cliente'] && !changes['cliente'].currentValue) {
+      this.form?.reset();
+      this.submitted = false;
     }
   }
 
@@ -63,13 +74,13 @@ export class ModalCliente implements OnInit {
   // Aplica máscara de CPF enquanto digita
   onCPFInput(event: any): void {
     let valor = event.target.value.replace(/\D/g, '');
-    
+
     if (valor.length > 11) {
       valor = valor.substring(0, 11);
     }
-    
+
     this.form.patchValue({ nuCPF: valor }, { emitEvent: false });
-    
+
     // Atualiza o campo visual com formatação
     if (valor.length === 11) {
       event.target.value = valor.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -81,13 +92,13 @@ export class ModalCliente implements OnInit {
   // Aplica máscara de telefone enquanto digita
   onTelefoneInput(event: any): void {
     let valor = event.target.value.replace(/\D/g, '');
-    
+
     if (valor.length > 11) {
       valor = valor.substring(0, 11);
     }
-    
+
     this.form.patchValue({ nuTelefone: valor }, { emitEvent: false });
-    
+
     // Atualiza o campo visual com formatação
     if (valor.length === 11) {
       event.target.value = valor.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
@@ -129,7 +140,7 @@ export class ModalCliente implements OnInit {
 
   getMensagemErro(campo: string): string {
     const control = this.form.get(campo);
-    
+
     if (control?.hasError('required')) {
       return 'Este campo é obrigatório';
     }
@@ -148,7 +159,7 @@ export class ModalCliente implements OnInit {
     if (control?.hasError('maxLength')) {
       return 'Tamanho máximo excedido';
     }
-    
+
     return '';
   }
 }
