@@ -1,4 +1,3 @@
-// src/app/view/clientes/clientes.ts
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Titulo } from '../../componentes/titulo/titulo';
@@ -8,11 +7,13 @@ import { ModalCliente } from '../../componentes/modal-cliente/modal-cliente';
 import { Loading } from '../../componentes/loading/loading';
 import { ClienteService } from '../../shared/services/cliente.service';
 import { Cliente, ClienteRequest } from '../../shared/models/cliente.model';
+import { CpfPipe } from '../../shared/pipes/cpf.pipe';
+import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 
 @Component({
   selector: 'app-clientes',
   standalone: true,
-  imports: [CommonModule, Titulo, InputPesquisa, Tabela, ModalCliente, Loading],
+  imports: [CommonModule, Titulo, InputPesquisa, Tabela, ModalCliente, Loading, CpfPipe, TelefonePipe],
   templateUrl: './clientes.html',
   styleUrl: './clientes.scss',
 })
@@ -76,7 +77,6 @@ export class Clientes implements OnInit {
     this.loading = true;
 
     if (this.clienteSelecionado) {
-      // Editar
       this.clienteService.atualizar(this.clienteSelecionado.cdCliente, clienteData).subscribe({
         next: () => {
           alert('Cliente atualizado com sucesso!');
@@ -90,7 +90,6 @@ export class Clientes implements OnInit {
         },
       });
     } else {
-      // Criar novo
       this.clienteService.criar(clienteData).subscribe({
         next: () => {
           alert('Cliente cadastrado com sucesso!');

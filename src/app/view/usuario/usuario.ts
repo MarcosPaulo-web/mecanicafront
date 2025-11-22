@@ -1,4 +1,3 @@
-// src/app/view/usuario/usuario.ts
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Titulo } from '../../componentes/titulo/titulo';
@@ -10,15 +9,17 @@ import { ModalUsuario } from '../../componentes/modal-usuario/modal-usuario';
 import { Loading } from '../../componentes/loading/loading';
 import { UsuarioService } from '../../shared/services/usuario.service';
 import { Usuario as UsuarioModel, UsuarioRequest, UserRole } from '../../shared/models/usuario.model';
+import { CpfPipe } from '../../shared/pipes/cpf.pipe';
+import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 
 @Component({
   selector: 'app-usuario',
   standalone: true,
-  imports: [CommonModule, Titulo, Card, PesquisaFiltro, Tabela, ModalUsuario, Loading],
+  imports: [CommonModule, Titulo, Card, PesquisaFiltro, Tabela, ModalUsuario, Loading, CpfPipe, TelefonePipe],
   templateUrl: './usuario.html',
   styleUrl: './usuario.scss',
 })
-export class Usuario implements OnInit {  // ✅ MANTIDO NOME CONSISTENTE
+export class Usuario implements OnInit {
   @ViewChild(ModalUsuario) modalUsuario!: ModalUsuario;
 
   protected usuarios: UsuarioModel[] = [];

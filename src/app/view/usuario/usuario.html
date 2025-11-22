@@ -1,4 +1,3 @@
-<!-- src/app/view/usuario/usuario.html -->
 <main class="container-xxl py-5">
   <app-loading [show]="loading" message="Carregando usuários..." />
 
@@ -62,8 +61,8 @@
         <tr>
           <td>{{ usuario.nmUsuario }}</td>
           <td>{{ usuario.email }}</td>
-          <td>{{ usuario.nuTelefone || '-' }}</td>
-          <td>{{ usuario.nuCPF || '-' }}</td>
+          <td>{{ usuario.nuTelefone | telefone || '-' }}</td>
+          <td>{{ usuario.nuCPF | cpf || '-' }}</td>
           <td>
             <span class="badge" [ngClass]="getRoleClass(usuario.roles)">
               {{ getRoleLabel(usuario.roles) }}

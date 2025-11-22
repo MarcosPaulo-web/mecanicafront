@@ -1,58 +1,140 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Titulo } from '../../componentes/titulo/titulo';
 import { Card } from '../../componentes/card/card';
-
 import { InputPesquisa } from '../../componentes/input-pesquisa/input-pesquisa';
 import { Tabela } from '../../componentes/tabela/tabela';
-import { CommonModule } from '@angular/common';
+import { ModalUsuario } from '../../componentes/modal-usuario/modal-usuario';
+import { Loading } from '../../componentes/loading/loading';
+import { UsuarioService } from '../../shared/services/usuario.service';
+import { Usuario as UsuarioModel, UsuarioRequest, UserRole } from '../../shared/models/usuario.model';
+import { CpfPipe } from '../../shared/pipes/cpf.pipe';
+import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 
 @Component({
   selector: 'app-mecanico',
-  imports: [Titulo, Card, InputPesquisa, Tabela, CommonModule],
+  imports: [Titulo, Card, InputPesquisa, Tabela, CommonModule, ModalUsuario, Loading, CpfPipe, TelefonePipe],
   templateUrl: './mecanico.html',
   styleUrl: './mecanico.scss',
 })
-export class Mecanico {
-  protected valorPesquisa: string = '';
+export class Mecanico implements OnInit {
+  @ViewChild(ModalUsuario) modalUsuario!: ModalUsuario;
 
-  getPesquisa(valor: string) {
-    this.valorPesquisa = valor;
+  protected mecanicos: UsuarioModel[] = [];
+  protected mecanicosFiltrados: UsuarioModel[] = [];
+  protected mecanicoSelecionado?: UsuarioModel;
+  protected loading: boolean = false;
+
+  protected listaCabecario: string[] = ['Nome', 'CPF', 'Telefone', 'Email', 'Status', 'Ações'];
+
+  protected totalMecanicos: number = 0;
+  protected mecanicosAtivos: number = 0;
+  protected mecanicosInativos: number = 0;
+
+  constructor(private usuarioService: UsuarioService) {}
+
+  ngOnInit(): void {
+    this.carregarMecanicos();
   }
 
-  protected listaCabecario: string[] = [
-    'Nome',
-    'CPF',
-    'Especialidade',
-    'Telefone',
-    'Email',
-    'Status',
-    'Ações',
-  ];
+  carregarMecanicos(): void {
+    this.loading = true;
+    this.usuarioService.listarMecanicosAtivos().subscribe({
+      next: (mecanicos) => {
+        this.mecanicos = mecanicos;
+        this.mecanicosFiltrados = mecanicos;
+        this.calcularContadores();
+        this.loading = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar mecânicos:', erro);
+        alert('Erro ao carregar mecânicos. Tente novamente.');
+        this.loading = false;
+      },
+    });
+  }
 
-  listaBody = [
-    {
-      nome: 'Carlos Mecânico',
-      cpf: '321.654.987-00',
-      especialidade: 'Motor e Suspensão',
-      telefone: '(11) 98765-4323',
-      email: 'mecanico@mecanica.com',
-      status: 'Ativo',
-    },
-    {
-      nome: 'Roberto Silva',
-      cpf: '654.321.987-00',
-      especialidade: 'Elétrica e Eletrônica',
-      telefone: '(11) 97654-3210',
-      email: 'roberto.mecanico@mecanica.com',
-      status: 'Ativo',
-    },
-    {
-      nome: 'Fernando Alves',
-      cpf: '789.456.123-00',
-      especialidade: 'Freios e Ar Condicionado',
-      telefone: '(11) 96543-2109',
-      email: 'fernando.mecanico@mecanica.com',
-      status: 'Inativo',
-    },
-  ];
+  calcularContadores(): void {
+    this.totalMecanicos = this.mecanicos.length;
+    this.mecanicosAtivos = this.mecanicos.filter((m) => m.ativo).length;
+    this.mecanicosInativos = this.mecanicos.filter((m) => !m.ativo).length;
+  }
+
+  filtrarMecanicos(termo: string): void {
+    if (!termo) {
+      this.mecanicosFiltrados = this.mecanicos;
+      return;
+    }
+
+    termo = termo.toLowerCase();
+    this.mecanicosFiltrados = this.mecanicos.filter(
+      (mecanico) =>
+        mecanico.nmUsuario.toLowerCase().includes(termo) ||
+        mecanico.email.toLowerCase().includes(termo) ||
+        mecanico.nuCPF?.includes(termo)
+    );
+  }
+
+  abrirModalNovo(): void {
+    this.mecanicoSelecionado = undefined;
+    setTimeout(() => this.modalUsuario.abrir(), 100);
+  }
+
+  abrirModalEditar(mecanico: UsuarioModel): void {
+    this.mecanicoSelecionado = mecanico;
+    setTimeout(() => this.modalUsuario.abrir(), 100);
+  }
+
+  salvarMecanico(mecanicoData: UsuarioRequest): void {
+    this.loading = true;
+
+    mecanicoData.roles = ['ROLE_MECANICO' as UserRole];
+
+    if (this.mecanicoSelecionado) {
+      this.usuarioService.atualizar(this.mecanicoSelecionado.cdUsuario, mecanicoData).subscribe({
+        next: () => {
+          alert('Mecânico atualizado com sucesso!');
+          this.modalUsuario.fecharModal();
+          this.carregarMecanicos();
+        },
+        error: (erro) => {
+          console.error('Erro ao atualizar mecânico:', erro);
+          alert('Erro ao atualizar mecânico. Tente novamente.');
+          this.loading = false;
+        },
+      });
+    } else {
+      this.usuarioService.criar(mecanicoData).subscribe({
+        next: () => {
+          alert('Mecânico cadastrado com sucesso!');
+          this.modalUsuario.fecharModal();
+          this.carregarMecanicos();
+        },
+        error: (erro) => {
+          console.error('Erro ao cadastrar mecânico:', erro);
+          alert('Erro ao cadastrar mecânico. Tente novamente.');
+          this.loading = false;
+        },
+      });
+    }
+  }
+
+  deletarMecanico(mecanico: UsuarioModel): void {
+    if (!confirm(`Deseja realmente deletar o mecânico ${mecanico.nmUsuario}?`)) {
+      return;
+    }
+
+    this.loading = true;
+    this.usuarioService.deletar(mecanico.cdUsuario).subscribe({
+      next: () => {
+        alert('Mecânico deletado com sucesso!');
+        this.carregarMecanicos();
+      },
+      error: (erro) => {
+        console.error('Erro ao deletar mecânico:', erro);
+        alert('Erro ao deletar mecânico. Tente novamente.');
+        this.loading = false;
+      },
+    });
+  }
 }

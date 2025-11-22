@@ -31,13 +31,13 @@ export interface OrdemServico {
   aprovado: boolean;
 }
 
-export interface ItemOrdemServico {
+export interface ItemOrdemServicoDTO {
   cdProduto?: number;
   cdServico?: number;
   quantidade: number;
 }
 
-export interface OrdemServicoRequest {
+export interface OrdemServicoRequestDTO {
   cdCliente: number;
   cdVeiculo: number;
   cdMecanico: number;
@@ -46,5 +46,5 @@ export interface OrdemServicoRequest {
   desconto?: number;
   observacoes?: string;
   diagnostico?: string;
-  itens: ItemOrdemServico[];
+  itens: ItemOrdemServicoDTO[];
 }

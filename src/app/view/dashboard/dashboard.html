@@ -1,25 +1,28 @@
 <main class="container-xxl pt-5 mb-4">
   <app-titulo title="Dashboard" subtitle="visão geral do sistema" />
+  
   <div class="row pt-4 row-gap-4">
-    <div class="col-sm-12 col-md-6 col-lg-4">
-      <app-card title="Ordens Abertas" num="2"><i class="bi bi-clock"></i> </app-card>
+    <div class="col-sm-12 col-md-6 col-lg-3">
+      <app-card [title]="'Ordens Abertas'" [num]="ordensAbertas.toString()">
+        <i class="bi bi-clock"></i>
+      </app-card>
     </div>
-    <div class="col-sm-12 col-md-6 col-lg-4">
-      <app-card title="Finalizados" num="1"><i class="bi bi-clock"></i> </app-card>
+    <div class="col-sm-12 col-md-6 col-lg-3">
+      <app-card [title]="'Finalizados'" [num]="ordensFinalizadas.toString()">
+        <i class="bi bi-check-circle"></i>
+      </app-card>
     </div>
-    <div class="col-sm-12 col-md-6 col-lg-4">
-      <app-card title="Entregues" num="1"><i class="bi bi-file-earmark"></i> </app-card>
-    </div>
-    <div class="col-sm-12 col-md-6 col-lg-4">
-      <app-card title="Faturamento" num="R$ 1080.00"
-        ><i class="bi bi-currency-dollar"></i>
+    <div class="col-sm-12 col-md-6 col-lg-3">
+      <app-card [title]="'Faturamento Hoje'" [num]="'R$ ' + faturamentoDia.toFixed(2)">
+        <i class="bi bi-currency-dollar"></i>
       </app-card>
     </div>
   </div>
+
   <div class="row row-gap-4 mt-5">
     <div class="col-sm-12 col-md-6 col-lg-4">
-      <app-botao-grande title="Nova ordem" subtitle="Criar ordem de serviço" link="/ordens"
-        ><i class="bi bi-file-earmark"></i>
+      <app-botao-grande title="Nova ordem" subtitle="Criar ordem de serviço" link="/ordens">
+        <i class="bi bi-file-earmark"></i>
       </app-botao-grande>
     </div>
     <div class="col-sm-12 col-md-6 col-lg-4">
@@ -33,25 +36,9 @@
       </app-botao-grande>
     </div>
     <div class="col-sm-12 col-md-6 col-lg-4">
-      <app-botao-grande title="Mecânicos" subtitle="Gerenciar mecânicos" link="/mecanico">
-        <i class="bi bi-wrench"></i>
+      <app-botao-grande title="Vendas" subtitle="Realizar vendas" link="/vendas">
+        <i class="bi bi-cart"></i>
       </app-botao-grande>
-    </div>
-  </div>
-
-  <div class="row flex-wrap mt-5 border rounded-4 border-opacity-25 py-5 px-2 border-body">
-    <div class="col-12">
-      <div class="row">
-        <div class="col-12 d-flex justify-content-between">
-          <h4 class="fw-semibold">Ordens recentes</h4>
-          <button class="btn btn-primary-mecanica" routerLink="/ordens">Ver todas</button>
-        </div>
-      </div>
-      <div class="row mt-3 flex-wrap">
-        <div class="col-12">
-          <app-list-item />
-        </div>
-      </div>
     </div>
   </div>
 </main>

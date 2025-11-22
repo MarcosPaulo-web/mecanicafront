@@ -1,4 +1,3 @@
-<!-- src/app/view/clientes/clientes.html -->
 <main class="container-xxl pt-5">
   <app-loading [show]="loading" message="Carregando clientes..." />
 
@@ -33,8 +32,8 @@
       @for (cliente of clientesFiltrados; track cliente.cdCliente) {
       <tr>
         <td>{{ cliente.nmCliente }}</td>
-        <td>{{ cliente.nuCPF || '-' }}</td>
-        <td>{{ cliente.nuTelefone || '-' }}</td>
+        <td>{{ cliente.nuCPF | cpf || '-' }}</td>
+        <td>{{ cliente.nuTelefone | telefone || '-' }}</td>
         <td>{{ cliente.email || '-' }}</td>
         <td>{{ cliente.dsEndereco || '-' }}</td>
         <td>

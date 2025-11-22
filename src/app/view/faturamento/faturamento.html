@@ -1,4 +1,6 @@
 <main class="container-xxl py-5">
+  <app-loading [show]="loading" message="Carregando faturamento..." />
+  
   <app-titulo title="Faturamento" subtitle="Visão completa do faturamento e lucro da oficina" />
 
   <div class="row mt-5 border border-body p-3 rounded-3 row-gap-2">
@@ -10,97 +12,49 @@
     </div>
   </div>
 
-  <div class="row mt-5">
-    <div class="col-sm-12 col-md-6 col-lg-3">
-      <app-card title="Receita Total" num="R$ 525.00"
-        ><i class="bi bi-currency-dollar"></i
-      ></app-card>
+  <div class="row mt-5 row-gap-3">
+    <div class="col-sm-12 col-md-6 col-lg-4">
+      <app-card [title]="'Receita Total'" [num]="'R$ ' + totalFaturado.toFixed(2)">
+        <i class="bi bi-currency-dollar"></i>
+      </app-card>
     </div>
-    <div class="col-sm-12 col-md-6 col-lg-3">
-      <app-card title="Lucro Líquido" num="R$ 329.25">
-        <i class="bi bi-graph-up-arrow"></i
-      ></app-card>
+    <div class="col-sm-12 col-md-6 col-lg-4">
+      <app-card [title]="'Serviços'" [num]="'R$ ' + totalServicos.toFixed(2)">
+        <i class="bi bi-wrench"></i>
+      </app-card>
     </div>
-    <div class="col-sm-12 col-md-6 col-lg-3">
-      <app-card title="Margem de Lucro" num="50%"><i class="bi bi-graph-up-arrow"></i></app-card>
-    </div>
-    <div class="col-sm-12 col-md-6 col-lg-3">
-      <app-card title="Ordens concluidas" num="1"><i class="bi bi-calendar"></i></app-card>
-    </div>
-  </div>
-
-  <div class="row justify-content-between mt-5">
-    <div class="col-sm-12 col-md-5 border border-body p-4 rounded-4">
-      <h5>Receita por categoria</h5>
-      <div class="row row-gap-3 mt-4">
-        <div class="col-12">
-          <app-card-financeiro
-            titulo="Serviços"
-            subtitulo="Mão de obra"
-            preco="3000.00"
-            infoAdd="57.1%"
-            ><i class="bi bi-cart"></i
-          ></app-card-financeiro>
-        </div>
-        <div class="col-12">
-          <app-card-financeiro
-            titulo="Peças"
-            subtitulo="Produtos Vendidos"
-            preco="225.00"
-            infoAdd="40.1%"
-            ><i class="bi bi-box-seam"></i
-          ></app-card-financeiro>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-sm-12 col-md-6 border border-body p-4 rounded-4">
-      <h5>Receita por categoria</h5>
-      <div class="row row-gap-3 mt-4">
-        <div class="col-12">
-          <app-card-financeiro
-            titulo="Lucros em Serviços"
-            subtitulo="100% margens"
-            preco="3000.00"
-            class="bg-success-subtle"
-            ><i class="bi bi-arrow-up-circle"></i
-          ></app-card-financeiro>
-        </div>
-        <div class="col-12">
-          <app-card-financeiro
-            titulo="Lucro em Peças"
-            subtitulo="15% margens"
-            preco="29.00"
-            class="bg-primary-subtle"
-            ><i class="bi bi-arrow-up-circle"></i
-          ></app-card-financeiro>
-        </div>
-        <div class="col-12">
-          <app-card-financeiro
-            titulo="Lucro em Peças"
-            subtitulo="15% margens"
-            preco="29.00"
-            class="bg-danger-subtle"
-            ><i class="bi bi-arrow-down-circle"></i
-          ></app-card-financeiro>
-        </div>
-      </div>
+    <div class="col-sm-12 col-md-6 col-lg-4">
+      <app-card [title]="'Produtos'" [num]="'R$ ' + totalProdutos.toFixed(2)">
+        <i class="bi bi-box-seam"></i>
+      </app-card>
     </div>
   </div>
 
   <div class="row border border-body mt-5 p-3 rounded-4">
-    <h5>Ordens concluidas</h5>
+    <h5>Faturamento</h5>
     <div class="row mt-3">
+      @if (faturamentos.length === 0) {
+      <div class="col-12 text-center py-5">
+        <i class="bi bi-inbox fs-1 text-muted"></i>
+        <p class="text-muted mt-3">Nenhum faturamento para o período selecionado</p>
+      </div>
+      } @else {
       <app-tabela [cabecario]="cabecario">
-        @for (item of linhas; track $index) {
-        <td>{{ item.numero }}</td>
-        <td>{{ item.cliente }}</td>
-        <td>{{ item.data }}</td>
-        <td>{{ item.servicos }}</td>
-        <td>{{ item.pecas }}</td>
-        <td [ngClass]="item.total > 0 ? 'text-success' : 'text-danger'">R$ {{ item.total }}</td>
+        @for (item of faturamentos; track item.cdFaturamento) {
+        <tr>
+          <td>
+            <span class="badge" [ngClass]="item.tipoTransacao === 'SERVICO' ? 'bg-primary' : 'bg-success'">
+              {{ item.tipoTransacao }}
+            </span>
+          </td>
+          <td>{{ item.nomeCliente }}</td>
+          <td>{{ formatarData(item.dataVenda) }}</td>
+          <td>{{ item.formaPagamento }}</td>
+          <td class="fw-bold text-success">R$ {{ item.vlTotal.toFixed(2) }}</td>
+        </tr>
         }
       </app-tabela>
+      }
     </div>
   </div>
 </main>

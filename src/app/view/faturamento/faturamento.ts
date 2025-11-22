@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Titulo } from '../../componentes/titulo/titulo';
 import { DropdownBotao } from '../../componentes/dropdown-botao/dropdown-botao';
 import { OptionDropdown } from '../../shared/models/option-dropdown';
@@ -6,59 +6,84 @@ import { Card } from '../../componentes/card/card';
 import { CardFinanceiro } from '../../componentes/card-financeiro/card-financeiro';
 import { Tabela } from '../../componentes/tabela/tabela';
 import { CommonModule } from '@angular/common';
+import { FaturamentoService } from '../../shared/services/faturamento.service';
+import { Faturamento } from '../../shared/models/venda.model';
+import { Loading } from '../../componentes/loading/loading';
 
 @Component({
   selector: 'app-faturamento',
-  imports: [Titulo, DropdownBotao, Card, CardFinanceiro, Tabela, CommonModule],
+  imports: [Titulo, DropdownBotao, Card, CardFinanceiro, Tabela, CommonModule, Loading],
   templateUrl: './faturamento.html',
   styleUrl: './faturamento.scss',
 })
-export class Faturamento {
+export class Faturamento implements OnInit {
+  protected loading: boolean = false;
+  protected faturamentos: Faturamento[] = [];
+  protected totalFaturado: number = 0;
+  protected totalServicos: number = 0;
+  protected totalProdutos: number = 0;
+
   protected listaFiltro: OptionDropdown[] = [
-    new OptionDropdown('Todos os Servoços'),
+    new OptionDropdown('Hoje'),
     new OptionDropdown('Mensal'),
     new OptionDropdown('Anual'),
   ];
 
-  protected valorFiltro: string = '';
-  getFiltro(valor: string) {
-    this.valorFiltro = valor;
+  protected valorFiltro: string = 'Hoje';
+  protected cabecario: string[] = ['Tipo', 'Cliente', 'Data', 'Forma Pagamento', 'Total'];
+
+  constructor(private faturamentoService: FaturamentoService) {}
+
+  ngOnInit(): void {
+    this.carregarFaturamentoDoDia();
   }
 
-  protected meses = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
-  ];
+  carregarFaturamentoDoDia(): void {
+    this.loading = true;
+    this.faturamentoService.listarFaturamentoDoDia().subscribe({
+      next: (faturamentos) => {
+        this.faturamentos = faturamentos;
+        this.calcularTotais();
+        this.loading = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar faturamento:', erro);
+        this.loading = false;
+      },
+    });
+  }
 
-  getValorInputFiltro() {
-    if (this.valorFiltro === 'Anual') {
-      return new Date().getFullYear();
-    } else if (this.valorFiltro === 'Mensal') {
-      return this.meses[new Date().getMonth()];
-    } else {
-      return 'Todos os Períodos';
+  calcularTotais(): void {
+    this.totalFaturado = this.faturamentos.reduce((sum, f) => sum + f.vlTotal, 0);
+    this.totalServicos = this.faturamentos
+      .filter((f) => f.tipoTransacao === 'SERVICO')
+      .reduce((sum, f) => sum + f.vlTotal, 0);
+    this.totalProdutos = this.faturamentos
+      .filter((f) => f.tipoTransacao === 'VENDA')
+      .reduce((sum, f) => sum + f.vlTotal, 0);
+  }
+
+  getFiltro(valor: string): void {
+    this.valorFiltro = valor;
+    
+    if (valor === 'Hoje') {
+      this.carregarFaturamentoDoDia();
     }
   }
 
-  cabecario: string[] = ['Número', 'Cliente', 'Data', 'Serviços', 'Peças', 'Total'];
-  linhas: any[] = [
-    {
-      numero: 'OS-2025-002',
-      cliente: 'Pedro Santos',
-      data: '09/11/2025',
-      servicos: 'R$ 300.00',
-      pecas: 'R$ 225.00',
-      total: 525.0,
-    },
-  ];
+  getValorInputFiltro(): string {
+    if (this.valorFiltro === 'Anual') {
+      return new Date().getFullYear().toString();
+    } else if (this.valorFiltro === 'Mensal') {
+      const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+      return meses[new Date().getMonth()];
+    } else {
+      return 'Hoje';
+    }
+  }
+
+  formatarData(data: string): string {
+    return new Date(data).toLocaleDateString('pt-BR');
+  }
 }

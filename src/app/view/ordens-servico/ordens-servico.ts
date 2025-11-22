@@ -1,36 +1,34 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Titulo } from '../../componentes/titulo/titulo';
 import { PesquisaFiltro } from '../../componentes/pesquisa-filtro/pesquisa-filtro';
 import { OptionDropdown } from '../../shared/models/option-dropdown';
 import { Tabela } from '../../componentes/tabela/tabela';
 import { CommonModule } from '@angular/common';
+import { OrdemServicoService } from '../../shared/services/ordem-servico.service';
+import { OrdemServico, StatusOrdemServico } from '../../shared/models/ordem-servico.model';
+import { Loading } from '../../componentes/loading/loading';
+import { ModalOrdemServico } from '../../componentes/modal-ordem-servico/modal-ordem-servico';
 
 @Component({
   selector: 'app-ordens-servico',
-  imports: [Titulo, PesquisaFiltro, Tabela, CommonModule],
+  imports: [Titulo, PesquisaFiltro, Tabela, CommonModule, Loading, ModalOrdemServico],
   templateUrl: './ordens-servico.html',
   styleUrl: './ordens-servico.scss',
 })
-export class OrdensServico {
+export class OrdensServico implements OnInit {
+  @ViewChild(ModalOrdemServico) modalOrdem!: ModalOrdemServico;
+
+  protected loading: boolean = false;
+  protected ordens: OrdemServico[] = [];
+  protected ordensFiltradas: OrdemServico[] = [];
+
   protected listFiltro: OptionDropdown[] = [
     new OptionDropdown('Todos os status'),
-    new OptionDropdown('Aberta'),
+    new OptionDropdown('Aguardando'),
     new OptionDropdown('Em Andamento'),
-    new OptionDropdown('Aguardando Peças'),
-    new OptionDropdown('Finalizada'),
-    new OptionDropdown('Entregue'),
+    new OptionDropdown('Concluída'),
     new OptionDropdown('Cancelada'),
   ];
-
-  protected inputText: string = '';
-  protected filtroSelecionado: string = '';
-
-  receberFiltro(valor: string) {
-    this.filtroSelecionado = valor;
-  }
-  receberInputText(valor: string) {
-    this.inputText = valor;
-  }
 
   protected cabecalho: string[] = [
     'OS',
@@ -43,76 +41,87 @@ export class OrdensServico {
     'Ações',
   ];
 
-  listaOS = [
-    {
-      os: 'OS-2025-001',
-      cliente: 'Maria Cliente',
-      veiculo: {
-        placa: 'ABC-1234',
-        modelo: 'Honda Civic',
+  constructor(private ordemServicoService: OrdemServicoService) {}
+
+  ngOnInit(): void {
+    this.carregarOrdens();
+  }
+
+  carregarOrdens(): void {
+    this.loading = true;
+    this.ordemServicoService.listarPorStatus(StatusOrdemServico.AGUARDANDO).subscribe({
+      next: (ordens) => {
+        this.ordens = ordens;
+        this.ordensFiltradas = ordens;
+        this.loading = false;
       },
-      mecanico: 'Carlos Mecânico',
-      status: 'Em Andamento',
-      statusClass: 'warning', // badge amarela
-      dataAbertura: '07/11/2025',
-      valor: 780.0,
-      acao: 'ver',
-    },
-    {
-      os: 'OS-2025-002',
-      cliente: 'Pedro Santos',
-      veiculo: {
-        placa: 'XYZ-5678',
-        modelo: 'Toyota Corolla',
+      error: (erro) => {
+        console.error('Erro ao carregar ordens:', erro);
+        alert('Erro ao carregar ordens de serviço. Tente novamente.');
+        this.loading = false;
       },
-      mecanico: 'Fernando Alves',
-      status: 'Finalizada',
-      statusClass: 'success', // badge verde
-      dataAbertura: '08/11/2025',
-      valor: 525.0,
-      acao: 'ver',
-    },
-    {
-      os: 'OS-2025-003',
-      cliente: 'Ana Costa',
-      veiculo: {
-        placa: 'DEF-9012',
-        modelo: 'Chevrolet Onix',
-      },
-      mecanico: 'Fernando Alves',
-      status: 'Aguardando Peças',
-      statusClass: 'warning', // badge amarela escura
-      dataAbertura: '09/11/2025',
-      valor: 350.0,
-      acao: 'ver',
-    },
-    {
-      os: 'OS-2025-004',
-      cliente: 'Maria Cliente',
-      veiculo: {
-        placa: 'ABC-1234',
-        modelo: 'Honda Civic',
-      },
-      mecanico: 'Carlos Mecânico',
-      status: 'Entregue',
-      statusClass: 'secondary', // badge cinza
-      dataAbertura: '24/10/2025',
-      valor: 555.0,
-      acao: 'ver',
-    },
-    {
-      os: 'OS-2025-005',
-      cliente: 'Pedro Santos',
-      veiculo: {
-        placa: 'XYZ-5678',
-        modelo: 'Toyota Corolla',
-      },
-      mecanico: 'Roberto Silva',
-      status: 'Aberta',
-      statusClass: 'info', // badge azul clara
-      dataAbertura: '10/11/2025',
-      valor: 120.0,
-      acao: 'ver',
-    },
-  ];
+    });
+  }
+
+  filtrarPorTexto(termo: string): void {
+    if (!termo) {
+      this.ordensFiltradas = this.ordens;
+      return;
+    }
+
+    termo = termo.toLowerCase();
+    this.ordensFiltradas = this.ordens.filter(
+      (ordem) =>
+        ordem.nmCliente.toLowerCase().includes(termo) ||
+        ordem.placa.toLowerCase().includes(termo) ||
+        ordem.cdOrdemServico.toString().includes(termo)
+    );
+  }
+
+  filtrarPorStatus(filtro: string): void {
+    if (filtro === 'Todos os status') {
+      this.ordensFiltradas = this.ordens;
+      return;
+    }
+
+    const statusMap: Record<string, StatusOrdemServico> = {
+      'Aguardando': StatusOrdemServico.AGUARDANDO,
+      'Em Andamento': StatusOrdemServico.EM_ANDAMENTO,
+      'Concluída': StatusOrdemServico.CONCLUIDA,
+      'Cancelada': StatusOrdemServico.CANCELADA,
+    };
+
+    const status = statusMap[filtro];
+    if (status) {
+      this.ordensFiltradas = this.ordens.filter((o) => o.statusOrdemServico === status);
+    }
+  }
+
+  abrirModalNova(): void {
+    setTimeout(() => this.modalOrdem.abrir(), 100);
+  }
+
+  getStatusClass(status: StatusOrdemServico): string {
+    const classes: Record<StatusOrdemServico, string> = {
+      [StatusOrdemServico.AGUARDANDO]: 'bg-secondary',
+      [StatusOrdemServico.EM_ANDAMENTO]: 'bg-secondary-mecanica',
+      [StatusOrdemServico.CONCLUIDA]: 'bg-success',
+      [StatusOrdemServico.CANCELADA]: 'bg-danger',
+    };
+    return classes[status] || 'bg-secondary';
+  }
+
+  getStatusLabel(status: StatusOrdemServico): string {
+    const labels: Record<StatusOrdemServico, string> = {
+      [StatusOrdemServico.AGUARDANDO]: 'Aguardando',
+      [StatusOrdemServico.EM_ANDAMENTO]: 'Em Andamento',
+      [StatusOrdemServico.CONCLUIDA]: 'Concluída',
+      [StatusOrdemServico.CANCELADA]: 'Cancelada',
+    };
+    return labels[status] || status;
+  }
+
+  formatarData(data: string): string {
+    return new Date(data).toLocaleDateString('pt-BR');
+  }
 }
