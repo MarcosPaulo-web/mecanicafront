@@ -1,5 +1,5 @@
 // src/app/componentes/modal-veiculo/modal-veiculo.ts
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Veiculo, VeiculoRequest } from '../../shared/models/veiculo.model';
@@ -25,24 +25,33 @@ export class ModalVeiculo implements OnInit {
   protected clientes: Cliente[] = [];
   private modal: any;
 
-  constructor(
-    private fb: FormBuilder,
-    private clienteService: ClienteService
-  ) {}
+  constructor(private fb: FormBuilder, private clienteService: ClienteService) {}
 
   ngOnInit(): void {
     this.criarForm();
     this.carregarClientes();
-    
+
     if (this.veiculo) {
       this.preencherForm();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Verifica se veio um novo veículo do componente pai
+    if (changes['veiculo'] && !changes['veiculo'].firstChange) {
+      if (this.veiculo) {
+        this.preencherForm();
+      } else {
+        this.form.reset();
+        this.submitted = false;
+      }
     }
   }
 
   private criarForm(): void {
     this.form = this.fb.group({
       cdCliente: ['', [Validators.required]],
-      placa: ['', [Validators.required, Validators.pattern(/^[A-Z]{3}-\d{4}$/)]],
+      placa: ['', [Validators.required, Validators.pattern(/^[A-Z]{3}-\d{4}$/i)]],
       marca: ['', [Validators.required, Validators.maxLength(50)]],
       modelo: ['', [Validators.required, Validators.maxLength(50)]],
       ano: ['', [Validators.required, Validators.min(1900), Validators.max(2099)]],
@@ -109,7 +118,7 @@ export class ModalVeiculo implements OnInit {
 
   getMensagemErro(campo: string): string {
     const control = this.form.get(campo);
-    
+
     if (control?.hasError('required')) {
       return 'Este campo é obrigatório';
     }
@@ -125,7 +134,7 @@ export class ModalVeiculo implements OnInit {
     if (control?.hasError('maxLength')) {
       return 'Tamanho máximo excedido';
     }
-    
+
     return '';
   }
 }
