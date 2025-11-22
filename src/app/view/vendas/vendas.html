@@ -1,5 +1,5 @@
 <!-- src/app/view/vendas/vendas.html -->
-<main class="container-xxl pt-5">
+<main class="container-xxl py-5">
   <app-loading [show]="loading" message="Carregando vendas..." />
 
   <div class="row align-items-center">
@@ -47,7 +47,7 @@
 
   <div class="row border border-body rounded-4 pt-3 mt-5">
     <h5 class="mb-3">Histórico de Vendas</h5>
-    
+
     @if (vendasFiltradas.length === 0) {
     <div class="col-12 text-center py-5">
       <i class="bi bi-inbox fs-1 text-muted"></i>
@@ -78,8 +78,5 @@
     }
   </div>
 
-  <app-modal-venda
-    (salvar)="salvarVenda($event)"
-    (fechar)="fecharModal()"
-  />
+  <app-modal-venda (salvar)="salvarVenda($event)" (fechar)="fecharModal()" />
 </main>
