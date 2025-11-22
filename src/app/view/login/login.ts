@@ -1,7 +1,7 @@
 // src/app/view/login/login.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
@@ -14,6 +14,7 @@ export class Login implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
 
   protected form!: FormGroup;
   protected submitted: boolean = false;
@@ -21,20 +22,25 @@ export class Login implements OnInit {
   protected errorMessage: string = '';
 
   ngOnInit(): void {
-    // Se já está logado, redireciona
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/home']);
       return;
     }
 
-    // ✅ CORRIGIDO: Usar 'password' ao invés de 'senha'
+    // Verificar erro de usuário não cadastrado
+    this.route.queryParams.subscribe(params => {
+      if (params['error'] === 'usuario_nao_cadastrado') {
+        this.errorMessage = `Usuário ${params['email']} não está cadastrado no sistema. Entre em contato com o administrador.`;
+      }
+    });
+
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(3)]], // ✅ MUDOU AQUI!
+      password: ['', [Validators.required, Validators.minLength(3)]],
     });
   }
 
-  // Login local
+  // ✅ ADICIONAR ESTE MÉTODO
   onSubmit() {
     this.submitted = true;
     this.errorMessage = '';
@@ -46,11 +52,8 @@ export class Login implements OnInit {
 
     this.loading = true;
 
-    // 🔍 DEBUG: Mostrar dados sendo enviados
     console.log('=== TENTATIVA DE LOGIN ===');
     console.log('Email:', this.form.value.email);
-    console.log('Password enviado:', this.form.value.password ? '***' : 'VAZIO');
-    console.log('Payload completo:', JSON.stringify(this.form.value));
 
     this.authService.login(this.form.value).subscribe({
       next: (response) => {

@@ -36,25 +36,26 @@ export class AuthService {
     window.location.href = environment.oauth2.googleAuthUrl;
   }
 
-  // Callback do OAuth2 (recebe token da URL)
-  handleOAuth2Callback(token: string, email: string): void {
-    // Buscar dados completos do usuário
-    this.http.get<Usuario>(`${environment.apiUrl}/auth/me`).subscribe({
-      next: (usuario) => {
-        const authResponse: AuthResponse = {
-          accessToken: token,
-          tokenType: 'Bearer',
-          usuario: usuario,
-        };
-        this.handleAuthSuccess(authResponse);
-        this.router.navigate(['/home']);
-      },
-      error: () => {
-        console.error('Erro ao buscar dados do usuário');
-        this.router.navigate(['/']);
-      },
-    });
-  }
+   handleOAuth2Callback(token: string, email: string): void {
+  localStorage.setItem(this.TOKEN_KEY, token);
+  
+  this.http.get<Usuario>(`${environment.apiUrl}/auth/me`).subscribe({
+    next: (usuario) => {
+      const authResponse: AuthResponse = {
+        accessToken: token,
+        tokenType: 'Bearer',
+        usuario: usuario,
+      };
+      this.handleAuthSuccess(authResponse);
+      this.router.navigate(['/home']);
+    },
+    error: () => {
+      console.error('Erro ao buscar dados do usuário');
+      localStorage.removeItem(this.TOKEN_KEY);
+      this.router.navigate(['/']);
+    },
+  });
+}
 
   // Processar sucesso de autenticação
   private handleAuthSuccess(response: AuthResponse): void {
@@ -90,10 +91,18 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }
-
-  // Verificar se está autenticado
+  
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    const user = this.getCurrentUser();
+
+    // ✅ ADICIONAR: Verificar se token e usuário existem
+    if (!token || !user) {
+      this.logout(); // Limpar dados inválidos
+      return false;
+    }
+
+    return true;
   }
 
   // Obter usuário atual
