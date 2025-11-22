@@ -26,9 +26,26 @@ export class ModalProduto implements OnInit {
 
   ngOnInit(): void {
     this.criarForm();
-    
+
     if (this.produto) {
       this.preencherForm();
+    }
+  }
+
+  ngOnChanges(): void {
+    if (this.produto) {
+      this.form.patchValue({
+        nmProduto: this.produto.nmProduto,
+        dsProduto: this.produto.dsProduto,
+        categoria: this.produto.categoria,
+        vlCusto: this.produto.vlCusto,
+        vlVenda: this.produto.vlVenda,
+        qtdEstoque: this.produto.qtdEstoque,
+        qtdMinimo: this.produto.qtdMinimo,
+      });
+    } else {
+      // Se abrir para novo produto
+      this.form.reset();
     }
   }
 
@@ -95,7 +112,7 @@ export class ModalProduto implements OnInit {
 
   getMensagemErro(campo: string): string {
     const control = this.form.get(campo);
-    
+
     if (control?.hasError('required')) {
       return 'Este campo é obrigatório';
     }
@@ -105,7 +122,7 @@ export class ModalProduto implements OnInit {
     if (control?.hasError('maxLength')) {
       return 'Tamanho máximo excedido';
     }
-    
+
     return '';
   }
 }

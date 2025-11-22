@@ -15,13 +15,23 @@ import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 @Component({
   selector: 'app-mecanico',
   standalone: true,
-  imports: [CommonModule, Titulo, Card, InputPesquisa, Tabela, ModalUsuario, Loading, CpfPipe, TelefonePipe],
+  imports: [
+    CommonModule,
+    Titulo,
+    Card,
+    InputPesquisa,
+    Tabela,
+    ModalUsuario,
+    Loading,
+    CpfPipe,
+    TelefonePipe,
+  ],
   templateUrl: './mecanico.html',
   styleUrl: './mecanico.scss',
 })
 export class Mecanico implements OnInit {
   @ViewChild(ModalUsuario) modalUsuario!: ModalUsuario;
-
+  TEMPO_ESPERA: number = 200;
   protected mecanicos: Usuario[] = [];
   protected mecanicosFiltrados: Usuario[] = [];
   protected mecanicoSelecionado?: Usuario;
@@ -79,12 +89,12 @@ export class Mecanico implements OnInit {
 
   abrirModalNovo(): void {
     this.mecanicoSelecionado = undefined;
-    setTimeout(() => this.modalUsuario.abrir(), 100);
+    setTimeout(() => this.modalUsuario.abrir(), this.TEMPO_ESPERA);
   }
 
   abrirModalEditar(mecanico: Usuario): void {
     this.mecanicoSelecionado = mecanico;
-    setTimeout(() => this.modalUsuario.abrir(), 100);
+    setTimeout(() => this.modalUsuario.abrir(), this.TEMPO_ESPERA);
   }
 
   salvarMecanico(mecanicoData: UsuarioRequest): void {
