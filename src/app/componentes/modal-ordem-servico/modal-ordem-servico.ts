@@ -1,7 +1,17 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  FormsModule,
+  Validators,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { OrdemServicoRequestDTO, ItemOrdemServicoDTO, TipoServico } from '../../shared/models/ordem-servico.model';
+import {
+  OrdemServicoRequestDTO,
+  ItemOrdemServicoDTO,
+  TipoServico,
+} from '../../shared/models/ordem-servico.model';
 import { Cliente } from '../../shared/models/cliente.model';
 import { Veiculo } from '../../shared/models/veiculo.model';
 import { Usuario } from '../../shared/models/usuario.model';
@@ -218,12 +228,16 @@ export class ModalOrdemServico implements OnInit {
   }
 
   fecharModal(): void {
-    this.modal?.hide();
+    if (this.modal) {
+      this.modal.hide();
+    }
+
     this.form.reset({
       tipoServico: 'ORDEM_DE_SERVICO',
       vlMaoObra: 0,
       desconto: 0,
     });
+
     this.itens = [];
     this.submitted = false;
     this.fechar.emit();
@@ -278,5 +292,49 @@ export class ModalOrdemServico implements OnInit {
   isInvalid(campo: string): boolean {
     const control = this.form.get(campo);
     return (control?.invalid && this.submitted) ?? false;
+  }
+
+  abrirParaEdicao(ordem: OrdemServicoRequestDTO): void {
+    // Reseta o formulário e os itens antes de preencher
+    this.criarForm();
+    this.itens = [];
+    this.submitted = false;
+
+    // Preenche os valores simples imediatamente
+    this.form.patchValue({
+      cdCliente: ordem.cdCliente,
+      cdMecanico: ordem.cdMecanico,
+      tipoServico: ordem.tipoServico,
+      vlMaoObra: ordem.vlMaoObra,
+      desconto: ordem.desconto,
+      observacoes: ordem.observacoes,
+      diagnostico: ordem.diagnostico,
+    });
+
+    // 1️⃣ Carrega os veículos do cliente selecionado
+    this.veiculoService.listarPorCliente(ordem.cdCliente).subscribe({
+      next: (veiculos) => {
+        this.veiculos = veiculos;
+
+        this.form.patchValue({
+          cdVeiculo: ordem.cdVeiculo,
+        });
+      },
+    });
+
+    // 2️⃣ Converte itens para o formato correto
+    this.itens = ordem.itens.map((item) => {
+      const novoItem: ItemOrdemServicoDTO = {
+        quantidade: item.quantidade,
+      };
+
+      if (item.cdProduto) novoItem.cdProduto = item.cdProduto;
+      if (item.cdServico) novoItem.cdServico = item.cdServico;
+
+      return novoItem;
+    });
+
+    // 3️⃣ Modo somente leitura
+    this.form.disable();
   }
 }

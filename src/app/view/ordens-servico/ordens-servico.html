@@ -43,7 +43,7 @@
         <td>{{ formatarData(ordem.dataAbertura) }}</td>
         <td>R$ {{ ordem.vlTotal.toFixed(2) }}</td>
         <td>
-          <button class="btn">
+          <button class="btn" (click)="editar(ordem)">
             <i class="bi bi-eye-fill"></i>
           </button>
         </td>
@@ -53,5 +53,5 @@
     }
   </div>
 
-  <app-modal-ordem-servico />
+  <app-modal-ordem-servico #modal />
 </div>

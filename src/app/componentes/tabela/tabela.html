@@ -1,12 +1,14 @@
-<table class="table">
-  <thead>
-    <tr>
-      @for (item of cabecario; track $index) {
-      <th scope="col">{{ item }}</th>
-      }
-    </tr>
-  </thead>
-  <tbody>
-    <ng-content />
-  </tbody>
-</table>
+<div class="table-responsive" style="max-height: 270px">
+  <table class="table overflow-y-scroll">
+    <thead class="position-sticky top-0">
+      <tr>
+        @for (item of cabecario; track $index) {
+        <th scope="col">{{ item }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      <ng-content />
+    </tbody>
+  </table>
+</div>

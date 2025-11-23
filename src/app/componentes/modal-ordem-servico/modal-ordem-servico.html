@@ -102,7 +102,7 @@
             </div>
 
             <!-- Adicionar Item -->
-            <div class="col-12 border rounded p-3 bg-light">
+            <div class="col-12 border bg-body rounded p-3 bg-light">
               <div class="row g-2 align-items-end">
                 <div class="col-md-3">
                   <label class="form-label">Tipo</label>
@@ -124,19 +124,17 @@
                     [ngModelOptions]="{ standalone: true }"
                   >
                     <option value="">Selecione</option>
-                    @if (tipoItemSelecionado === 'PRODUTO') {
-                      @for (produto of produtos; track produto.cdProduto) {
-                      <option [value]="produto.cdProduto">
-                        {{ produto.nmProduto }} - R$ {{ produto.vlVenda }} (Estoque: {{ produto.qtdEstoque }})
-                      </option>
-                      }
-                    } @else {
-                      @for (servico of servicos; track servico.cdServico) {
-                      <option [value]="servico.cdServico">
-                        {{ servico.nmServico }} - R$ {{ servico.vlServico }}
-                      </option>
-                      }
-                    }
+                    @if (tipoItemSelecionado === 'PRODUTO') { @for (produto of produtos; track
+                    produto.cdProduto) {
+                    <option [value]="produto.cdProduto">
+                      {{ produto.nmProduto }} - R$ {{ produto.vlVenda }} (Estoque:
+                      {{ produto.qtdEstoque }})
+                    </option>
+                    } } @else { @for (servico of servicos; track servico.cdServico) {
+                    <option [value]="servico.cdServico">
+                      {{ servico.nmServico }} - R$ {{ servico.vlServico }}
+                    </option>
+                    } }
                   </select>
                 </div>
 
@@ -234,7 +232,8 @@
             <div class="col-md-4 d-flex align-items-end">
               <div class="w-100">
                 <h5 class="text-end mb-0">
-                  Total: <span class="text-primary-mecanica">R$ {{ calcularTotal().toFixed(2) }}</span>
+                  Total:
+                  <span class="text-primary-mecanica">R$ {{ calcularTotal().toFixed(2) }}</span>
                 </h5>
               </div>
             </div>
@@ -265,10 +264,12 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="fecharModal()">
-            Cancelar
-          </button>
-          <button type="submit" class="btn btn-primary-mecanica" [disabled]="loading || itens.length === 0">
+          <button type="button" class="btn btn-secondary" (click)="fecharModal()">Cancelar</button>
+          <button
+            type="submit"
+            class="btn btn-primary-mecanica"
+            [disabled]="loading || itens.length === 0"
+          >
             @if (loading) {
             <span class="spinner-border spinner-border-sm me-2"></span>
             }

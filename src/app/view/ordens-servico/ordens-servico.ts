@@ -5,7 +5,11 @@ import { OptionDropdown } from '../../shared/models/option-dropdown';
 import { Tabela } from '../../componentes/tabela/tabela';
 import { CommonModule } from '@angular/common';
 import { OrdemServicoService } from '../../shared/services/ordem-servico.service';
-import { OrdemServico, StatusOrdemServico } from '../../shared/models/ordem-servico.model';
+import {
+  OrdemServico,
+  OrdemServicoRequestDTO,
+  StatusOrdemServico,
+} from '../../shared/models/ordem-servico.model';
 import { Loading } from '../../componentes/loading/loading';
 import { ModalOrdemServico } from '../../componentes/modal-ordem-servico/modal-ordem-servico';
 
@@ -85,10 +89,10 @@ export class OrdensServico implements OnInit {
     }
 
     const statusMap: Record<string, StatusOrdemServico> = {
-      'Aguardando': StatusOrdemServico.AGUARDANDO,
+      Aguardando: StatusOrdemServico.AGUARDANDO,
       'Em Andamento': StatusOrdemServico.EM_ANDAMENTO,
-      'Concluída': StatusOrdemServico.CONCLUIDA,
-      'Cancelada': StatusOrdemServico.CANCELADA,
+      Concluída: StatusOrdemServico.CONCLUIDA,
+      Cancelada: StatusOrdemServico.CANCELADA,
     };
 
     const status = statusMap[filtro];
@@ -123,5 +127,11 @@ export class OrdensServico implements OnInit {
 
   formatarData(data: string): string {
     return new Date(data).toLocaleDateString('pt-BR');
+  }
+  @ViewChild('modal') modal!: ModalOrdemServico;
+
+  editar(os: any) {
+    this.abrirModalNova();
+    this.modal.abrirParaEdicao(os);
   }
 }
