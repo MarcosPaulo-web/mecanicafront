@@ -4,7 +4,10 @@
 
   <div class="row justify-content-between align-items-center">
     <div class="col-6">
-      <app-titulo title="Agenda" subtitle="Gerencie os agendamentos e disponibilidade dos mecânicos" />
+      <app-titulo
+        title="Agenda"
+        subtitle="Gerencie os agendamentos e disponibilidade dos mecânicos"
+      />
     </div>
     <div class="col-6 text-end">
       <button class="btn btn-primary-mecanica" (click)="abrirModalNovo()">
@@ -25,9 +28,9 @@
       />
     </div>
     <div class="col-sm-12 col-md-6 col-lg-3">
-      <app-dropdown-botao 
-        [listDropdown]="listaMecanico" 
-        (mandarFiltro)="selecionarMecanico($event)" 
+      <app-dropdown-botao
+        [listDropdown]="listaMecanico"
+        (mandarFiltro)="selecionarMecanico($event)"
       />
     </div>
   </div>
@@ -65,14 +68,14 @@
 
   <div class="row border border-body border-opacity-25 rounded-4 mt-4 p-3">
     <h5>Agendamentos - {{ date | date : "EEEE, dd 'de' MMMM 'de' yyyy" }}</h5>
-    
+
     @if (listaMecanicos.length === 0) {
     <div class="col-12 text-center py-5">
       <i class="bi bi-calendar-x fs-1 text-muted"></i>
       <p class="text-muted mt-3">Nenhum agendamento para esta data</p>
     </div>
     } @else {
-    <div class="row row-gap-3 mt-3">
+    <div class="row row-gap-3 mt-3 overflow-y-auto" style="max-height: 500px">
       <div class="col-12">
         <app-card-agendamento [mecanicos]="listaMecanicos" />
       </div>
