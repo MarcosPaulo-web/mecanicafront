@@ -5,11 +5,7 @@ import { OptionDropdown } from '../../shared/models/option-dropdown';
 import { Tabela } from '../../componentes/tabela/tabela';
 import { CommonModule } from '@angular/common';
 import { OrdemServicoService } from '../../shared/services/ordem-servico.service';
-import {
-  OrdemServico,
-  OrdemServicoRequestDTO,
-  StatusOrdemServico,
-} from '../../shared/models/ordem-servico.model';
+import { OrdemServico, StatusOrdemServico } from '../../shared/models/ordem-servico.model';
 import { Loading } from '../../componentes/loading/loading';
 import { ModalOrdemServico } from '../../componentes/modal-ordem-servico/modal-ordem-servico';
 
@@ -26,8 +22,9 @@ export class OrdensServico implements OnInit {
   protected ordens: OrdemServico[] = [];
   protected ordensFiltradas: OrdemServico[] = [];
 
+  protected statusFiltroAtual: StatusOrdemServico = StatusOrdemServico.AGUARDANDO;
+
   protected listFiltro: OptionDropdown[] = [
-    new OptionDropdown('Todos os status'),
     new OptionDropdown('Aguardando'),
     new OptionDropdown('Em Andamento'),
     new OptionDropdown('Concluída'),
@@ -53,7 +50,8 @@ export class OrdensServico implements OnInit {
 
   carregarOrdens(): void {
     this.loading = true;
-    this.ordemServicoService.listarPorStatus(StatusOrdemServico.AGUARDANDO).subscribe({
+
+    this.ordemServicoService.listarPorStatus(this.statusFiltroAtual).subscribe({
       next: (ordens) => {
         this.ordens = ordens;
         this.ordensFiltradas = ordens;
@@ -83,11 +81,6 @@ export class OrdensServico implements OnInit {
   }
 
   filtrarPorStatus(filtro: string): void {
-    if (filtro === 'Todos os status') {
-      this.ordensFiltradas = this.ordens;
-      return;
-    }
-
     const statusMap: Record<string, StatusOrdemServico> = {
       Aguardando: StatusOrdemServico.AGUARDANDO,
       'Em Andamento': StatusOrdemServico.EM_ANDAMENTO,
@@ -96,9 +89,19 @@ export class OrdensServico implements OnInit {
     };
 
     const status = statusMap[filtro];
-    if (status) {
-      this.ordensFiltradas = this.ordens.filter((o) => o.statusOrdemServico === status);
+
+    if (filtro === 'Todos os status') {
+      this.ordensFiltradas = this.ordens;
+      return;
     }
+
+    if (status) {
+      this.statusFiltroAtual = status;
+      this.carregarOrdens();
+      return;
+    }
+
+    this.ordensFiltradas = this.ordens.filter((o) => o.statusOrdemServico === status);
   }
 
   abrirModalNova(): void {
