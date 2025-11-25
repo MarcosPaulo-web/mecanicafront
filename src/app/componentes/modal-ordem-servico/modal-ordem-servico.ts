@@ -36,7 +36,7 @@ declare var bootstrap: any;
 export class ModalOrdemServico implements OnInit {
   @Output() salvar = new EventEmitter<void>();
   @Output() fechar = new EventEmitter<void>();
-  @Input() tipo: 'ORDEM_DE_SERVICO' | 'ORCAMENTO' = 'ORDEM_DE_SERVICO';
+  @Input({ required: true }) tipo: 'ORDEM_DE_SERVICO' | 'ORCAMENTO' = 'ORDEM_DE_SERVICO';
 
   protected form!: FormGroup;
   protected submitted: boolean = false;
@@ -69,6 +69,9 @@ export class ModalOrdemServico implements OnInit {
     this.criarForm();
     this.carregarDados();
     this.form.get('tipoServico')?.setValue(this.tipo);
+    if (this.tipo) {
+      this.form.get('tipoServico')?.disable({ emitEvent: false });
+    }
   }
 
   private criarForm(): void {
@@ -235,7 +238,10 @@ export class ModalOrdemServico implements OnInit {
     }
 
     this.form.reset({
-      tipoServico: 'ORDEM_DE_SERVICO',
+      tipoServico: this.tipo,
+      cdVeiculo: '',
+      cdMecanico: '',
+      cdCliente: '',
       vlMaoObra: 0,
       desconto: 0,
     });
