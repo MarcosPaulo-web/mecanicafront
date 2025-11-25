@@ -54,6 +54,7 @@ export class Orcamento implements OnInit {
     this.loading = true;
     this.ordemServicoService.listarOrcamentosPendentes().subscribe({
       next: (orcamentos) => {
+        console.log(orcamentos);
         this.orcamentos = orcamentos;
         this.orcamentosFiltrados = orcamentos;
         this.calcularContadores();
@@ -142,5 +143,23 @@ export class Orcamento implements OnInit {
     this.abrirModalNova();
     this.modalOrdem.abrirParaEdicao(os);
     console.log(os);
+  }
+
+  deletarOrcamento(orcamento: any) {
+    if (!confirm(`Deletar orçamento #${orcamento.cdOrdemServico}?`)) {
+      return;
+    }
+
+    this.ordemServicoService.cancelar(orcamento.cdOrdemServico).subscribe({
+      next: () => {
+        alert('Orçamento Cancelado com sucesso!');
+        this.carregarOrcamentos();
+      },
+      error: (erro) => {
+        console.error('Erro ao cancelar orçamento:', erro);
+        alert('Erro ao cancelar orçamento. Tente novamente.');
+        this.loading = false;
+      },
+    });
   }
 }
