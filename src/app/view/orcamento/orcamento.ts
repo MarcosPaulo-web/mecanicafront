@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Titulo } from '../../componentes/titulo/titulo';
 import { Card } from '../../componentes/card/card';
 import { PesquisaFiltro } from '../../componentes/pesquisa-filtro/pesquisa-filtro';
@@ -8,10 +8,11 @@ import { CommonModule } from '@angular/common';
 import { OrdemServicoService } from '../../shared/services/ordem-servico.service';
 import { OrdemServico, TipoServico } from '../../shared/models/ordem-servico.model';
 import { Loading } from '../../componentes/loading/loading';
+import { ModalOrdemServico } from '../../componentes/modal-ordem-servico/modal-ordem-servico';
 
 @Component({
   selector: 'app-orcamento',
-  imports: [Titulo, Card, PesquisaFiltro, Tabela, CommonModule, Loading],
+  imports: [Titulo, Card, PesquisaFiltro, Tabela, CommonModule, Loading, ModalOrdemServico],
   templateUrl: './orcamento.html',
   styleUrl: './orcamento.scss',
 })
@@ -24,6 +25,7 @@ export class Orcamento implements OnInit {
   protected orcamentosPendentes: number = 0;
   protected orcamentosAprovados: number = 0;
   protected orcamentosRecusados: number = 0;
+  @ViewChild(ModalOrdemServico) modalOrdem!: ModalOrdemServico;
 
   protected listFiltro: OptionDropdown[] = [
     new OptionDropdown('Todos os status'),
@@ -130,5 +132,9 @@ export class Orcamento implements OnInit {
 
   formatarData(data: string): string {
     return new Date(data).toLocaleDateString('pt-BR');
+  }
+
+  abrirModalNova(): void {
+    setTimeout(() => this.modalOrdem.abrir(), 100);
   }
 }

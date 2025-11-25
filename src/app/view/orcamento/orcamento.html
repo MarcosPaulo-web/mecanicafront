@@ -6,7 +6,7 @@
       <app-titulo title="Orçamentos" subtitle="Gerencie todos os orçamentos da oficina" />
     </div>
     <div class="col-sm-12 col-md-6 col-lg-3 text-end">
-      <button class="btn btn-primary-mecanica" routerLink="/ordens">
+      <button class="btn btn-primary-mecanica" (click)="abrirModalNova()">
         <i class="bi bi-plus-lg"></i> Novo Orçamento
       </button>
     </div>
@@ -65,10 +65,11 @@
           </td>
           <td>
             @if (!orcamento.aprovado) {
-            <button 
-              class="btn btn-success btn-sm" 
+            <button
+              class="btn btn-success btn-sm"
               (click)="aprovarOrcamento(orcamento)"
-              title="Aprovar orçamento">
+              title="Aprovar orçamento"
+            >
               <i class="bi bi-check-circle"></i>
             </button>
             }
@@ -82,4 +83,5 @@
       }
     </div>
   </div>
+  <app-modal-ordem-servico #modal tipo="ORCAMENTO" />
 </main>
