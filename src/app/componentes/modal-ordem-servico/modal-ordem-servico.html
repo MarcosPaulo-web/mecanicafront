@@ -8,7 +8,9 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-primary-mecanica text-white">
-        <h5 class="modal-title" id="modalOrdemServicoLabel">Nova Ordem de Serviço</h5>
+        <h5 class="modal-title" id="modalOrdemServicoLabel">
+          {{ tipo === 'ORDEM_DE_SERVICO' ? 'Ordem de Serviço' : 'Orçamento' }}
+        </h5>
         <button
           type="button"
           class="btn-close btn-close-white"

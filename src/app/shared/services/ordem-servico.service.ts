@@ -3,10 +3,10 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { 
-  OrdemServico, 
-  OrdemServicoRequestDTO, // ✅ CORRIGIDO
-  StatusOrdemServico 
+import {
+  OrdemServico,
+  OrdemServicoRequestDTO,
+  StatusOrdemServico,
 } from '../models/ordem-servico.model';
 
 @Injectable({
@@ -16,7 +16,7 @@ export class OrdemServicoService {
   private http = inject(HttpClient);
   private readonly API_URL = `${environment.apiUrl}/ordens-servico`;
 
-  criar(ordem: OrdemServicoRequestDTO): Observable<OrdemServico> { // ✅ CORRIGIDO
+  criar(ordem: OrdemServicoRequestDTO): Observable<OrdemServico> {
     return this.http.post<OrdemServico>(this.API_URL, ordem);
   }
 
@@ -37,10 +37,7 @@ export class OrdemServicoService {
   }
 
   concluir(id: number, formaPagamento: string): Observable<OrdemServico> {
-    return this.http.patch<OrdemServico>(
-      `${this.API_URL}/${id}/concluir`, 
-      { formaPagamento }
-    );
+    return this.http.patch<OrdemServico>(`${this.API_URL}/${id}/concluir`, { formaPagamento });
   }
 
   cancelar(id: number): Observable<void> {

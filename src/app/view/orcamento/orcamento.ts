@@ -137,4 +137,10 @@ export class Orcamento implements OnInit {
   abrirModalNova(): void {
     setTimeout(() => this.modalOrdem.abrir(), 100);
   }
+
+  editar(os: any) {
+    this.abrirModalNova();
+    this.modalOrdem.abrirParaEdicao(os);
+    console.log(os);
+  }
 }

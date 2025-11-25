@@ -319,7 +319,6 @@ export class ModalOrdemServico implements OnInit {
       diagnostico: ordem.diagnostico,
     });
 
-    // 1️⃣ Carrega os veículos do cliente selecionado
     this.veiculoService.listarPorCliente(ordem.cdCliente).subscribe({
       next: (veiculos) => {
         this.veiculos = veiculos;
@@ -330,7 +329,6 @@ export class ModalOrdemServico implements OnInit {
       },
     });
 
-    // 2️⃣ Converte itens para o formato correto
     this.itens = ordem.itens.map((item) => {
       const novoItem: ItemOrdemServicoDTO = {
         quantidade: item.quantidade,
@@ -342,7 +340,6 @@ export class ModalOrdemServico implements OnInit {
       return novoItem;
     });
 
-    // 3️⃣ Modo somente leitura
     this.form.disable();
   }
 }
