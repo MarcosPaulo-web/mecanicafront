@@ -126,7 +126,6 @@ export class ModalOrdemServico implements OnInit {
     } else {
       this.veiculos = [];
       this.form.get('cdVeiculo')?.setValue('');
-      this.form.get('cdVeiculo')?.disable();
     }
   }
 
@@ -339,7 +338,6 @@ export class ModalOrdemServico implements OnInit {
 
       return novoItem;
     });
-
-    this.form.disable();
+    this.form.get('tipoServico')?.disable();
   }
 }
