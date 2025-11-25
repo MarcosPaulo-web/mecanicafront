@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -36,6 +36,7 @@ declare var bootstrap: any;
 export class ModalOrdemServico implements OnInit {
   @Output() salvar = new EventEmitter<void>();
   @Output() fechar = new EventEmitter<void>();
+  @Input() tipo: 'ORDEM_DE_SERVICO' | 'ORCAMENTO' = 'ORDEM_DE_SERVICO';
 
   protected form!: FormGroup;
   protected submitted: boolean = false;
@@ -67,6 +68,7 @@ export class ModalOrdemServico implements OnInit {
   ngOnInit(): void {
     this.criarForm();
     this.carregarDados();
+    this.form.get('tipoServico')?.setValue(this.tipo);
   }
 
   private criarForm(): void {
@@ -74,7 +76,7 @@ export class ModalOrdemServico implements OnInit {
       cdCliente: ['', [Validators.required]],
       cdVeiculo: ['', [Validators.required]],
       cdMecanico: ['', [Validators.required]],
-      tipoServico: ['ORDEM_DE_SERVICO', [Validators.required]],
+      tipoServico: ['', [Validators.required]],
       vlMaoObra: [0, [Validators.min(0)]],
       desconto: [0, [Validators.min(0)]],
       observacoes: [''],

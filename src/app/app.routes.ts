@@ -9,7 +9,6 @@ import { Clientes } from './view/clientes/clientes';
 import { Estoque } from './view/estoque/estoque';
 import { Orcamento } from './view/orcamento/orcamento';
 import { Usuario } from './view/usuario/usuario';
-import { Mecanico } from './view/mecanico/mecanico';
 import { FaturamentoView } from './view/faturamento/faturamento'; // ✅ ATUALIZADO
 import { Veiculos } from './view/veiculos/veiculos';
 import { Servicos } from './view/servicos/servicos';
@@ -21,65 +20,60 @@ import { roleGuard } from './shared/guards/role.guard';
 export const routes: Routes = [
   { path: '', component: Login },
   { path: 'auth/callback', component: AuthCallback },
-  { 
-    path: 'home', 
+  {
+    path: 'home',
     component: Dashboard,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
-  { 
-    path: 'ordens', 
+  {
+    path: 'ordens',
     component: OrdensServico,
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE', 'ROLE_MECANICO'])]
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE', 'ROLE_MECANICO'])],
   },
-  { 
-    path: 'agenda', 
+  {
+    path: 'agenda',
     component: Agenda,
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])]
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])],
   },
-  { 
-    path: 'clientes', 
+  {
+    path: 'clientes',
     component: Clientes,
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])]
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])],
   },
-  { 
-    path: 'veiculos', 
+  {
+    path: 'veiculos',
     component: Veiculos,
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])]
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])],
   },
-  { 
-    path: 'estoque', 
+  {
+    path: 'estoque',
     component: Estoque,
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])]
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])],
   },
-  { 
-    path: 'servicos', 
+  {
+    path: 'servicos',
     component: Servicos,
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])]
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])],
   },
-  { 
-    path: 'vendas', 
+  {
+    path: 'vendas',
     component: Vendas,
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])]
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])],
   },
-  { 
-    path: 'orcamento', 
+  {
+    path: 'orcamento',
     component: Orcamento,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
-  { 
-    path: 'usuario', 
+  {
+    path: 'usuario',
     component: Usuario,
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])],
   },
-  { 
-    path: 'mecanico', 
-    component: Mecanico,
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])]
-  },
-  { 
-    path: 'faturamento', 
+  {
+    path: 'faturamento',
     component: FaturamentoView, // ✅ ATUALIZADO
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])]
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])],
   },
   { path: '**', component: NotFound },
 ];
