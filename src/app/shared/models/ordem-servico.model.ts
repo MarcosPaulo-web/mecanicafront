@@ -2,12 +2,12 @@ export enum StatusOrdemServico {
   AGUARDANDO = 'AGUARDANDO',
   EM_ANDAMENTO = 'EM_ANDAMENTO',
   CONCLUIDA = 'CONCLUIDA',
-  CANCELADA = 'CANCELADA'
+  CANCELADA = 'CANCELADA',
 }
 
 export enum TipoServico {
   ORCAMENTO = 'ORCAMENTO',
-  ORDEM_DE_SERVICO = 'ORDEM_DE_SERVICO'
+  ORDEM_DE_SERVICO = 'ORDEM_DE_SERVICO',
 }
 
 export interface OrdemServico {
@@ -29,6 +29,20 @@ export interface OrdemServico {
   observacoes?: string;
   diagnostico?: string;
   aprovado: boolean;
+
+  // ✅ ADICIONAR AQUI
+  itens: ItemOrdemServicoDTO[];
+}
+
+export interface ItemOrdemServico {
+  cdItemOrdemServico: number;
+  cdProduto?: number;
+  nmProduto?: string;
+  cdServico?: number;
+  nmServico?: string;
+  quantidade: number;
+  vlUnitario: number;
+  vlTotal: number;
 }
 
 export interface ItemOrdemServicoDTO {
