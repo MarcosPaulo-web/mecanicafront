@@ -30,11 +30,9 @@
     </div>
   </div>
 
-  <div class="row">
-    <app-pesquisa-filtro
+  <div class="row border border-body p-3 rounded-4 mt-5">
+    <app-input-pesquisa
       label="Buscar por número, cliente ou placa..."
-      [listFiltro]="listFiltro"
-      (receberFiltro)="filtrarPorStatus($event)"
       (pesquisa)="filtrarPorTexto($event)"
     />
   </div>

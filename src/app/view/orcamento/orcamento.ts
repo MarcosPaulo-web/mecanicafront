@@ -9,10 +9,20 @@ import { OrdemServicoService } from '../../shared/services/ordem-servico.service
 import { OrdemServico, TipoServico } from '../../shared/models/ordem-servico.model';
 import { Loading } from '../../componentes/loading/loading';
 import { ModalOrdemServico } from '../../componentes/modal-ordem-servico/modal-ordem-servico';
+import { InputPesquisa } from '../../componentes/input-pesquisa/input-pesquisa';
 
 @Component({
   selector: 'app-orcamento',
-  imports: [Titulo, Card, PesquisaFiltro, Tabela, CommonModule, Loading, ModalOrdemServico],
+  imports: [
+    Titulo,
+    Card,
+    PesquisaFiltro,
+    Tabela,
+    CommonModule,
+    Loading,
+    ModalOrdemServico,
+    InputPesquisa,
+  ],
   templateUrl: './orcamento.html',
   styleUrl: './orcamento.scss',
 })
