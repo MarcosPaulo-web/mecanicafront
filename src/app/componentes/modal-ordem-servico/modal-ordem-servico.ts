@@ -78,7 +78,7 @@ export class ModalOrdemServico implements OnInit {
     this.form = this.fb.group({
       cdCliente: ['', [Validators.required]],
       cdVeiculo: ['', [Validators.required]],
-      cdMecanico: ['', [Validators.required]],
+      cdUsuario: ['', [Validators.required]],
       tipoServico: ['', [Validators.required]],
       vlMaoObra: [0, [Validators.min(0)]],
       desconto: [0, [Validators.min(0)]],
@@ -239,7 +239,7 @@ export class ModalOrdemServico implements OnInit {
     this.form.reset({
       tipoServico: this.tipo,
       cdVeiculo: '',
-      cdMecanico: '',
+      cdUsuario: '',
       cdCliente: '',
       vlMaoObra: 0,
       desconto: 0,
@@ -252,7 +252,7 @@ export class ModalOrdemServico implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
-
+console.log(this.form.value)
     if (this.form.invalid) {
       alert('Preencha todos os campos obrigatórios');
       return;
@@ -265,11 +265,13 @@ export class ModalOrdemServico implements OnInit {
 
     this.loading = true;
 
+     const formValue = this.form.getRawValue();
+
     const ordemData: OrdemServicoRequestDTO = {
       cdCliente: parseInt(this.form.value.cdCliente),
       cdVeiculo: parseInt(this.form.value.cdVeiculo),
-      cdMecanico: parseInt(this.form.value.cdMecanico),
-      tipoServico: this.form.value.tipoServico as TipoServico,
+      cdUsuario: parseInt(this.form.value.cdUsuario),
+      tipoServico: formValue.tipoServico as TipoServico,
       vlMaoObra: this.form.value.vlMaoObra || 0,
       desconto: this.form.value.desconto || 0,
       observacoes: this.form.value.observacoes,
@@ -310,7 +312,7 @@ export class ModalOrdemServico implements OnInit {
     // Preenche os valores simples imediatamente
     this.form.patchValue({
       cdCliente: ordem.cdCliente,
-      cdMecanico: ordem.cdMecanico,
+      cdUsuario: ordem.cdUsuario,
       tipoServico: ordem.tipoServico,
       vlMaoObra: ordem.vlMaoObra,
       desconto: ordem.desconto,

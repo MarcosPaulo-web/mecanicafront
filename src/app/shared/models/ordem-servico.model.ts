@@ -16,7 +16,7 @@ export interface OrdemServico {
   nmCliente: string;
   cdVeiculo: number;
   placa: string;
-  cdMecanico: number;
+  cdUsuario: number;
   nmMecanico: string;
   tipoServico: TipoServico;
   statusOrdemServico: StatusOrdemServico;
@@ -54,7 +54,7 @@ export interface ItemOrdemServicoDTO {
 export interface OrdemServicoRequestDTO {
   cdCliente: number;
   cdVeiculo: number;
-  cdMecanico: number;
+  cdUsuario: number;
   tipoServico: TipoServico;
   vlMaoObra?: number;
   desconto?: number;
