@@ -11,8 +11,14 @@ import { ModalAgendamento } from '../../componentes/modal-agendamento/modal-agen
 import { Loading } from '../../componentes/loading/loading';
 import { AgendamentoService } from '../../shared/services/agendamento.service';
 import { UsuarioService } from '../../shared/services/usuario.service';
-import { AgendamentoResponse, AgendamentoRequest, AgendamentoMecanico, AgendamentoItem } from '../../shared/models/agendamento.model';
-import { Usuario } from '../../shared/models/usuario.model';
+import {
+  AgendamentoResponse,
+  AgendamentoRequest,
+  AgendamentoMecanico,
+  AgendamentoItem,
+} from '../../shared/models/agendamento.model';
+import { UserRole, Usuario } from '../../shared/models/usuario.model';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-agenda',
@@ -26,7 +32,7 @@ import { Usuario } from '../../shared/models/usuario.model';
     CardAgendamento,
     ModalAgendamento,
     Loading,
-    CommonModule
+    CommonModule,
   ],
   templateUrl: './agenda.html',
   styleUrl: './agenda.scss',
@@ -49,15 +55,23 @@ export class Agenda implements OnInit {
   protected agendamentosAbertos: number = 0;
   protected agendamentosEmAndamento: number = 0;
   protected agendamentosFinalizados: number = 0;
+  protected role: UserRole = UserRole.ROLE_ATENDENTE;
+  protected UserRole = UserRole;
 
   constructor(
     private agendamentoService: AgendamentoService,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.carregarMecanicos();
     this.carregarAgendamentos();
+    const user = this.authService.getCurrentUser();
+
+    if (user) {
+      this.role = user.roles[0];
+    }
   }
 
   carregarMecanicos(): void {
@@ -105,7 +119,7 @@ export class Agenda implements OnInit {
     this.listaMecanicos = Array.from(agendamentosPorMecanico.entries()).map(
       ([cdMecanico, agendamentos]) => {
         const mecanico = this.mecanicos.find((m) => m.cdUsuario === cdMecanico);
-        
+
         return {
           nome: mecanico?.nmUsuario || 'Mecânico Desconhecido',
           especialidade: 'Especialista',
@@ -129,13 +143,15 @@ export class Agenda implements OnInit {
   calcularContadores(): void {
     this.totalAgendamentos = this.agendamentos.length;
     this.agendamentosAbertos = this.agendamentos.filter((a) => a.status === 'AGENDADO').length;
-    this.agendamentosEmAndamento = this.agendamentos.filter((a) => a.status === 'EM_ANDAMENTO').length;
+    this.agendamentosEmAndamento = this.agendamentos.filter(
+      (a) => a.status === 'EM_ANDAMENTO'
+    ).length;
     this.agendamentosFinalizados = this.agendamentos.filter((a) => a.status === 'CONCLUIDO').length;
   }
 
   selecionarMecanico(mecanico: string): void {
     this.mecanicoSelecionado = mecanico;
-    
+
     if (mecanico === 'Todos os Mecânicos') {
       this.organizarAgendamentosPorMecanico();
     } else {

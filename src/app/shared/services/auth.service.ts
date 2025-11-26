@@ -27,6 +27,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, credentials).pipe(
       tap((response) => {
         this.handleAuthSuccess(response);
+        console.log(response);
       })
     );
   }
@@ -36,26 +37,26 @@ export class AuthService {
     window.location.href = environment.oauth2.googleAuthUrl;
   }
 
-   handleOAuth2Callback(token: string, email: string): void {
-  localStorage.setItem(this.TOKEN_KEY, token);
-  
-  this.http.get<Usuario>(`${environment.apiUrl}/auth/me`).subscribe({
-    next: (usuario) => {
-      const authResponse: AuthResponse = {
-        accessToken: token,
-        tokenType: 'Bearer',
-        usuario: usuario,
-      };
-      this.handleAuthSuccess(authResponse);
-      this.router.navigate(['/home']);
-    },
-    error: () => {
-      console.error('Erro ao buscar dados do usuário');
-      localStorage.removeItem(this.TOKEN_KEY);
-      this.router.navigate(['/']);
-    },
-  });
-}
+  handleOAuth2Callback(token: string, email: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+
+    this.http.get<Usuario>(`${environment.apiUrl}/auth/me`).subscribe({
+      next: (usuario) => {
+        const authResponse: AuthResponse = {
+          accessToken: token,
+          tokenType: 'Bearer',
+          usuario: usuario,
+        };
+        this.handleAuthSuccess(authResponse);
+        this.router.navigate(['/home']);
+      },
+      error: () => {
+        console.error('Erro ao buscar dados do usuário');
+        localStorage.removeItem(this.TOKEN_KEY);
+        this.router.navigate(['/']);
+      },
+    });
+  }
 
   // Processar sucesso de autenticação
   private handleAuthSuccess(response: AuthResponse): void {
@@ -91,18 +92,10 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }
-  
+
   isAuthenticated(): boolean {
     const token = this.getToken();
-    const user = this.getCurrentUser();
-
-    // ✅ ADICIONAR: Verificar se token e usuário existem
-    if (!token || !user) {
-      this.logout(); // Limpar dados inválidos
-      return false;
-    }
-
-    return true;
+    return !!token;
   }
 
   // Obter usuário atual

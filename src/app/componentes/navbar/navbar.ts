@@ -6,6 +6,7 @@ import { ThemeService } from '../../shared/services/theme.service';
 import { DropdownLink } from '../dropdown-link/dropdown-link';
 import { AuthService } from '../../shared/services/auth.service';
 import { CommonModule } from '@angular/common';
+import { UserRole } from '../../shared/models/usuario.model';
 
 @Component({
   selector: 'app-navbar',
@@ -17,14 +18,16 @@ import { CommonModule } from '@angular/common';
 export class Navbar implements OnInit {
   private theme = inject(ThemeService);
   protected authService = inject(AuthService);
-  
+
   protected nomeUsuario: string = '';
   protected listDropdown: OptionDropdown[] = [];
-
+  protected role: UserRole = UserRole.ROLE_MECANICO;
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user) => {
       if (user) {
         this.nomeUsuario = user.nmUsuario;
+        this.role = user.roles[0];
+
         this.setupDropdownOptions();
       }
     });

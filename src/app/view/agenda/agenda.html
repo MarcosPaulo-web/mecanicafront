@@ -9,8 +9,13 @@
         subtitle="Gerencie os agendamentos e disponibilidade dos mecânicos"
       />
     </div>
+
     <div class="col-6 text-end">
-      <button class="btn btn-primary-mecanica" (click)="abrirModalNovo()">
+      <button
+        class="btn btn-primary-mecanica"
+        [ngClass]="{ disabled: role == UserRole.ROLE_MECANICO }"
+        (click)="abrirModalNovo()"
+      >
         <i class="bi bi-plus-lg"></i> Novo Agendamento
       </button>
     </div>

@@ -33,7 +33,7 @@ export const routes: Routes = [
   {
     path: 'agenda',
     component: Agenda,
-    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE'])],
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_ATENDENTE', 'ROLE_MECANICO'])],
   },
   {
     path: 'clientes',

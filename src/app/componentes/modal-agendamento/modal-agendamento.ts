@@ -2,7 +2,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AgendamentoResponse, AgendamentoRequest, StatusAgendamento } from '../../shared/models/agendamento.model';
+import {
+  AgendamentoResponse,
+  AgendamentoRequest,
+  StatusAgendamento,
+} from '../../shared/models/agendamento.model';
 import { Cliente } from '../../shared/models/cliente.model';
 import { Veiculo } from '../../shared/models/veiculo.model';
 import { Usuario } from '../../shared/models/usuario.model';
@@ -41,7 +45,6 @@ export class ModalAgendamento implements OnInit {
   ngOnInit(): void {
     this.criarForm();
     this.carregarDados();
-    
     if (this.agendamento) {
       this.preencherForm();
     }
@@ -78,7 +81,7 @@ export class ModalAgendamento implements OnInit {
 
   onClienteChange(): void {
     const cdCliente = this.form.get('cdCliente')?.value;
-    
+
     if (cdCliente) {
       this.veiculoService.listarPorCliente(cdCliente).subscribe({
         next: (veiculos) => {
@@ -125,7 +128,7 @@ export class ModalAgendamento implements OnInit {
   fecharModal(): void {
     this.modal?.hide();
     this.form.reset({
-      status: 'AGENDADO'
+      status: 'AGENDADO',
     });
     this.submitted = false;
     this.veiculos = [];
@@ -158,14 +161,14 @@ export class ModalAgendamento implements OnInit {
 
   getMensagemErro(campo: string): string {
     const control = this.form.get(campo);
-    
+
     if (control?.hasError('required')) {
       return 'Este campo é obrigatório';
     }
     if (control?.hasError('maxLength')) {
       return 'Tamanho máximo excedido';
     }
-    
+
     return '';
   }
 }

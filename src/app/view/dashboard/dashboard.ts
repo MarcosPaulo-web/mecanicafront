@@ -6,6 +6,9 @@ import { Titulo } from '../../componentes/titulo/titulo';
 import { OrdemServicoService } from '../../shared/services/ordem-servico.service';
 import { FaturamentoService } from '../../shared/services/faturamento.service';
 import { StatusOrdemServico } from '../../shared/models/ordem-servico.model';
+import { UserRole } from '../../shared/models/usuario.model';
+import { authGuard } from '../../shared/guards/auth.guard';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,14 +21,23 @@ export class Dashboard implements OnInit {
   protected ordensFinalizadas: number = 0;
   protected ordensEntregues: number = 0;
   protected faturamentoDia: number = 0;
+  protected role: UserRole = UserRole.ROLE_ADMIN;
+  protected UserRole = UserRole;
 
   constructor(
     private ordemServicoService: OrdemServicoService,
-    private faturamentoService: FaturamentoService
+    private faturamentoService: FaturamentoService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.carregarDados();
+
+    this.authService.currentUser$.subscribe((user) => {
+      if (user) {
+        this.role = user.roles[0];
+      }
+    });
   }
 
   carregarDados(): void {
