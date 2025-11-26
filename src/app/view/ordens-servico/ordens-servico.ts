@@ -8,6 +8,8 @@ import { OrdemServicoService } from '../../shared/services/ordem-servico.service
 import { OrdemServico, StatusOrdemServico } from '../../shared/models/ordem-servico.model';
 import { Loading } from '../../componentes/loading/loading';
 import { ModalOrdemServico } from '../../componentes/modal-ordem-servico/modal-ordem-servico';
+import { UserRole } from '../../shared/models/usuario.model';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-ordens-servico',
@@ -21,6 +23,8 @@ export class OrdensServico implements OnInit {
   protected loading: boolean = false;
   protected ordens: OrdemServico[] = [];
   protected ordensFiltradas: OrdemServico[] = [];
+  protected UserRole = UserRole;
+  protected role: UserRole = UserRole.ROLE_MECANICO;
 
   protected statusFiltroAtual: StatusOrdemServico = StatusOrdemServico.AGUARDANDO;
 
@@ -42,10 +46,14 @@ export class OrdensServico implements OnInit {
     'Ações',
   ];
 
-  constructor(private ordemServicoService: OrdemServicoService) {}
+  constructor(private ordemServicoService: OrdemServicoService, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.carregarOrdens();
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.role = user.roles[0];
+    }
   }
 
   carregarOrdens(): void {

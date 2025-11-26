@@ -6,7 +6,11 @@
       <app-titulo title="Ordens de Serviço" subtitle="Gerencie todas as ordens de serviço" />
     </div>
     <div class="col-6 text-end">
-      <button class="btn btn-primary-mecanica" (click)="abrirModalNova()">
+      <button
+        class="btn btn-primary-mecanica"
+        [ngClass]="{ disabled: role == UserRole.ROLE_MECANICO }"
+        (click)="abrirModalNova()"
+      >
         <i class="bi bi-plus-lg"></i> Nova Ordem
       </button>
     </div>

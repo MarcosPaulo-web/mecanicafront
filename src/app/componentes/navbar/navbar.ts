@@ -17,11 +17,13 @@ import { UserRole } from '../../shared/models/usuario.model';
 })
 export class Navbar implements OnInit {
   private theme = inject(ThemeService);
-  protected authService = inject(AuthService);
 
   protected nomeUsuario: string = '';
   protected listDropdown: OptionDropdown[] = [];
   protected role: UserRole = UserRole.ROLE_MECANICO;
+  protected UserRole = UserRole;
+  constructor(private authService: AuthService) {}
+
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       if (user) {

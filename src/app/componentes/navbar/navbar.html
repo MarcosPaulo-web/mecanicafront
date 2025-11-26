@@ -46,11 +46,14 @@
         <li class="nav-item">
           <a class="nav-link text-light" routerLink="/agenda" routerLinkActive="active">Agenda</a>
         </li>
+        @if (!(role == UserRole.ROLE_MECANICO)) {
+
         <li class="nav-item">
           <a class="nav-link text-light" routerLink="/clientes" routerLinkActive="active"
             >Clientes</a
           >
         </li>
+        }
       </ul>
 
       <app-dropdown-link [label]="nomeUsuario || 'Usuário'" [options]="listDropdown"
