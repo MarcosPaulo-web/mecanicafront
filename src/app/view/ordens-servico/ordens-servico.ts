@@ -145,4 +145,23 @@ export class OrdensServico implements OnInit {
     this.abrirModalNova();
     this.modal.abrirParaEdicao(os);
   }
+  confirmaOrcamento(ordem: OrdemServico) {
+    console.log('Confirmar orçamento');
+
+    this.ordemServicoService.concluir(ordem.cdOrdemServico, ordem.formaPagamento).subscribe({
+      next: (res) => {
+        alert('Orçamento aprovado');
+        console.log('Resposta do servidor:', res);
+      },
+      error: (err) => {
+        console.error('Erro ao aprovar orçamento:', err);
+        alert('Erro ao aprovar o orçamento. Tente novamente.');
+      },
+    });
+  }
+
+  ver(os: any) {
+    this.abrirModalNova();
+    this.modal.abrirParaVer(os);
+  }
 }

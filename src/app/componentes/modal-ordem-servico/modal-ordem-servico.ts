@@ -11,6 +11,7 @@ import {
   OrdemServicoRequestDTO,
   ItemOrdemServicoDTO,
   TipoServico,
+  FormaPagamento,
 } from '../../shared/models/ordem-servico.model';
 import { Cliente } from '../../shared/models/cliente.model';
 import { Veiculo } from '../../shared/models/veiculo.model';
@@ -54,6 +55,7 @@ export class ModalOrdemServico implements OnInit {
   protected quantidadeSelecionada: number = 1;
 
   private modal: any;
+  protected EnumFormaPagamento = FormaPagamento;
 
   constructor(
     private fb: FormBuilder,
@@ -72,6 +74,7 @@ export class ModalOrdemServico implements OnInit {
     if (this.tipo) {
       this.form.get('tipoServico')?.disable({ emitEvent: false });
     }
+    this.isTipoVer = false;
   }
 
   private criarForm(): void {
@@ -80,6 +83,7 @@ export class ModalOrdemServico implements OnInit {
       cdVeiculo: ['', [Validators.required]],
       cdUsuario: ['', [Validators.required]],
       tipoServico: ['', [Validators.required]],
+      FormaPagamento: ['', Validators.required],
       vlMaoObra: [0, [Validators.min(0)]],
       desconto: [0, [Validators.min(0)]],
       observacoes: [''],
@@ -241,6 +245,7 @@ export class ModalOrdemServico implements OnInit {
       cdVeiculo: '',
       cdUsuario: '',
       cdCliente: '',
+      FormaPagamento: 1,
       vlMaoObra: 0,
       desconto: 0,
     });
@@ -252,7 +257,7 @@ export class ModalOrdemServico implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
-console.log(this.form.value)
+    console.log(this.form.value);
     if (this.form.invalid) {
       alert('Preencha todos os campos obrigatórios');
       return;
@@ -265,13 +270,14 @@ console.log(this.form.value)
 
     this.loading = true;
 
-     const formValue = this.form.getRawValue();
+    const formValue = this.form.getRawValue();
 
     const ordemData: OrdemServicoRequestDTO = {
       cdCliente: parseInt(this.form.value.cdCliente),
       cdVeiculo: parseInt(this.form.value.cdVeiculo),
       cdUsuario: parseInt(this.form.value.cdUsuario),
       tipoServico: formValue.tipoServico as TipoServico,
+      FormaPagamento: this.form.value.FormaPagamento,
       vlMaoObra: this.form.value.vlMaoObra || 0,
       desconto: this.form.value.desconto || 0,
       observacoes: this.form.value.observacoes,
@@ -314,6 +320,7 @@ console.log(this.form.value)
       cdCliente: ordem.cdCliente,
       cdUsuario: ordem.cdUsuario,
       tipoServico: ordem.tipoServico,
+      FormaPagamento: ordem.FormaPagamento,
       vlMaoObra: ordem.vlMaoObra,
       desconto: ordem.desconto,
       observacoes: ordem.observacoes,
@@ -341,5 +348,14 @@ console.log(this.form.value)
       return novoItem;
     });
     this.form.get('tipoServico')?.disable();
+    this.isTipoVer = false;
+  }
+
+  protected isTipoVer: boolean = false;
+
+  abrirParaVer(ordem: OrdemServicoRequestDTO): void {
+    this.abrirParaEdicao(ordem);
+    this.form.disable();
+    this.isTipoVer = true;
   }
 }

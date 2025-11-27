@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  FormaPagamento,
   OrdemServico,
   OrdemServicoRequestDTO,
   StatusOrdemServico,
@@ -36,7 +37,7 @@ export class OrdemServicoService {
     return this.http.patch<OrdemServico>(`${this.API_URL}/${id}/aprovar-orcamento`, {});
   }
 
-  concluir(id: number, formaPagamento: string): Observable<OrdemServico> {
+  concluir(id: number, formaPagamento: FormaPagamento): Observable<OrdemServico> {
     return this.http.patch<OrdemServico>(`${this.API_URL}/${id}/concluir`, { formaPagamento });
   }
 

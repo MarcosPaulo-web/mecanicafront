@@ -10,6 +10,12 @@ export enum TipoServico {
   ORDEM_DE_SERVICO = 'ORDEM_DE_SERVICO',
 }
 
+export enum FormaPagamento {
+  DINHEIRO,
+  CARTAO_CREDITO,
+  CARTAO_DEBITO,
+  PIX,
+}
 export interface OrdemServico {
   cdOrdemServico: number;
   cdCliente: number;
@@ -19,6 +25,7 @@ export interface OrdemServico {
   cdUsuario: number;
   nmMecanico: string;
   tipoServico: TipoServico;
+  formaPagamento: FormaPagamento;
   statusOrdemServico: StatusOrdemServico;
   dataAbertura: string;
   dataFechamento?: string;
@@ -56,6 +63,7 @@ export interface OrdemServicoRequestDTO {
   cdVeiculo: number;
   cdUsuario: number;
   tipoServico: TipoServico;
+  FormaPagamento: FormaPagamento;
   vlMaoObra?: number;
   desconto?: number;
   observacoes?: string;

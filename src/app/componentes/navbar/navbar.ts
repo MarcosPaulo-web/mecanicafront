@@ -44,7 +44,7 @@ export class Navbar implements OnInit {
         },
       },
       {
-        label: 'Logout',
+        label: 'Sair',
         onClick: () => {
           this.authService.logout();
         },

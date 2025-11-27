@@ -112,6 +112,7 @@
                     class="form-select"
                     [(ngModel)]="tipoItemSelecionado"
                     [ngModelOptions]="{ standalone: true }"
+                    [disabled]="isTipoVer"
                   >
                     <option value="PRODUTO">Produto</option>
                     <option value="SERVICO">Serviço</option>
@@ -124,6 +125,7 @@
                     class="form-select"
                     [(ngModel)]="itemSelecionado"
                     [ngModelOptions]="{ standalone: true }"
+                    [disabled]="isTipoVer"
                   >
                     <option value="">Selecione</option>
                     @if (tipoItemSelecionado === 'PRODUTO') { @for (produto of produtos; track
@@ -148,6 +150,7 @@
                     [(ngModel)]="quantidadeSelecionada"
                     [ngModelOptions]="{ standalone: true }"
                     min="1"
+                    [disabled]="isTipoVer"
                   />
                 </div>
 
@@ -156,6 +159,7 @@
                     type="button"
                     class="btn btn-primary-mecanica w-100"
                     (click)="adicionarItem()"
+                    [disabled]="isTipoVer"
                   >
                     <i class="bi bi-plus-lg"></i> Adicionar
                   </button>
@@ -163,6 +167,23 @@
               </div>
             </div>
 
+            <div class="col-12 mt-3">
+              <select
+                class="form-select"
+                aria-label="Selecione uma forma de pagamento"
+                formControlName="FormaPagamento"
+              >
+                <option selected>Forma de Pagamento</option>
+                <option [value]="EnumFormaPagamento.DINHEIRO">Dinheiro</option>
+                <option [value]="EnumFormaPagamento.PIX">Pix</option>
+                <option [value]="EnumFormaPagamento.CARTAO_DEBITO">Débito</option>
+                <option [value]="EnumFormaPagamento.CARTAO_CREDITO">Crédito</option>
+              </select>
+              @if (form.get('FormaPagamento')?.invalid && submitted) {
+
+              <div class="text-danger">Selecione uma forma de pagamento</div>
+              }
+            </div>
             <!-- Lista de Itens -->
             <div class="col-12 mt-3">
               @if (itens.length === 0) {
@@ -193,6 +214,7 @@
                         type="button"
                         class="btn btn-sm btn-danger"
                         (click)="removerItem($index)"
+                        [disabled]="isTipoVer"
                       >
                         <i class="bi bi-trash"></i>
                       </button>
@@ -270,7 +292,7 @@
           <button
             type="submit"
             class="btn btn-primary-mecanica"
-            [disabled]="loading || itens.length === 0"
+            [disabled]="loading || itens.length === 0 || isTipoVer"
           >
             @if (loading) {
             <span class="spinner-border spinner-border-sm me-2"></span>
