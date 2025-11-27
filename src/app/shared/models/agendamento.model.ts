@@ -12,9 +12,8 @@ export interface AgendamentoResponse {
   nmCliente: string;
   cdVeiculo: number;
   placa: string;
-  cdMecanico: number;
+  cdUsuario: number;
   nmMecanico: string;
-  horario: string;
   status: StatusAgendamento;
   observacoes?: string;
   dataAgendamento: string;
@@ -23,8 +22,8 @@ export interface AgendamentoResponse {
 export interface AgendamentoRequest {
   cdCliente: number;
   cdVeiculo: number;
-  cdMecanico: number;
-  horario: string;
+  cdUsuario: number;
+  dataAgendamento: string;
   observacoes?: string;
   status?: StatusAgendamento;
 }

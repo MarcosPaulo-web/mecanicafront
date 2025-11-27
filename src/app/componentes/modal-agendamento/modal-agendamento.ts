@@ -54,8 +54,8 @@ export class ModalAgendamento implements OnInit {
     this.form = this.fb.group({
       cdCliente: ['', [Validators.required]],
       cdVeiculo: ['', [Validators.required]],
-      cdMecanico: ['', [Validators.required]],
-      horario: ['', [Validators.required]],
+      cdUsuario: ['', [Validators.required]],
+      dataAgendamento: ['', [Validators.required]],
       status: ['AGENDADO'],
       observacoes: ['', [Validators.maxLength(500)]],
     });
@@ -109,8 +109,8 @@ export class ModalAgendamento implements OnInit {
           this.form.patchValue({
             cdCliente: this.agendamento!.cdCliente,
             cdVeiculo: this.agendamento!.cdVeiculo,
-            cdMecanico: this.agendamento!.cdMecanico,
-            horario: this.agendamento!.horario,
+            cdUsuario: this.agendamento!.cdUsuario,
+            dataAgendamento: this.agendamento!.dataAgendamento,
             status: this.agendamento!.status,
             observacoes: this.agendamento!.observacoes,
           });
@@ -137,7 +137,7 @@ export class ModalAgendamento implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
-
+    console.log(this.form.value)
     if (this.form.invalid) {
       return;
     }
@@ -145,8 +145,8 @@ export class ModalAgendamento implements OnInit {
     const agendamentoData: AgendamentoRequest = {
       cdCliente: parseInt(this.form.value.cdCliente),
       cdVeiculo: parseInt(this.form.value.cdVeiculo),
-      cdMecanico: parseInt(this.form.value.cdMecanico),
-      horario: this.form.value.horario,
+      cdUsuario: parseInt(this.form.value.cdUsuario),
+      dataAgendamento: this.form.value.dataAgendamento,
       status: this.form.value.status as StatusAgendamento,
       observacoes: this.form.value.observacoes || undefined,
     };

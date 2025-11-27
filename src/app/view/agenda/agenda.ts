@@ -110,15 +110,15 @@ export class Agenda implements OnInit {
     const agendamentosPorMecanico = new Map<number, AgendamentoResponse[]>();
 
     this.agendamentos.forEach((agendamento) => {
-      if (!agendamentosPorMecanico.has(agendamento.cdMecanico)) {
-        agendamentosPorMecanico.set(agendamento.cdMecanico, []);
+      if (!agendamentosPorMecanico.has(agendamento.cdUsuario)) {
+        agendamentosPorMecanico.set(agendamento.cdUsuario, []);
       }
-      agendamentosPorMecanico.get(agendamento.cdMecanico)!.push(agendamento);
+      agendamentosPorMecanico.get(agendamento.cdUsuario)!.push(agendamento);
     });
 
     this.listaMecanicos = Array.from(agendamentosPorMecanico.entries()).map(
-      ([cdMecanico, agendamentos]) => {
-        const mecanico = this.mecanicos.find((m) => m.cdUsuario === cdMecanico);
+      ([cdUsuario, agendamentos]) => {
+        const mecanico = this.mecanicos.find((m) => m.cdUsuario === cdUsuario);
 
         return {
           nome: mecanico?.nmUsuario || 'Mecânico Desconhecido',
@@ -130,7 +130,7 @@ export class Agenda implements OnInit {
   }
 
   converterParaItem(agendamento: AgendamentoResponse): AgendamentoItem {
-    const horario = new Date(agendamento.horario);
+    const horario = new Date(agendamento.dataAgendamento);
     return {
       hora: horario.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       os: `AG-${agendamento.cdAgendamento}`,
