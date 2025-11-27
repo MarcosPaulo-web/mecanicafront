@@ -19,8 +19,8 @@ export class AgendamentoService {
     return this.http.get<AgendamentoResponse>(`${this.API_URL}/${id}`);
   }
 
-  listarPorMecanico(cdMecanico: number): Observable<AgendamentoResponse[]> {
-    return this.http.get<AgendamentoResponse[]>(`${this.API_URL}/mecanico/${cdMecanico}`);
+  listarPorMecanico(cdUsuario: number): Observable<AgendamentoResponse[]> {
+    return this.http.get<AgendamentoResponse[]>(`${this.API_URL}/mecanico/${cdUsuario}`);
   }
 
   listarFuturos(): Observable<AgendamentoResponse[]> {
