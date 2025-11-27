@@ -47,9 +47,19 @@
         <td>{{ formatarData(ordem.dataAbertura) }}</td>
         <td>R$ {{ ordem.vlTotal.toFixed(2) }}</td>
         <td>
+          @if (role != UserRole.ROLE_MECANICO) {
+
           <button class="btn" (click)="editar(ordem)">
             <i class="bi bi-pencil-square"></i>
           </button>
+          } @if (role == UserRole.ROLE_MECANICO) {
+          <button class="btn text-success" (click)="confirmaOrcamento(ordem)">
+            <i class="bi bi-check-circle"></i>
+          </button>
+          <button class="btn text-body" (click)="ver(ordem)">
+            <i class="bi bi-eye"></i>
+          </button>
+          }
         </td>
       </tr>
       }
